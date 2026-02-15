@@ -1,0 +1,158 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+
+<div class="relative min-h-screen bg-gradient-to-br from-[#0f2027] via-[#1c2b35] to-[#2c5364] text-white overflow-hidden">
+
+  <!-- Animated Glow Background -->
+  <div class="absolute w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl top-[-80px] left-[-80px] animate-pulse"></div>
+  <div class="absolute w-96 h-96 bg-blue-500/20 rounded-full blur-3xl bottom-[-80px] right-[-80px] animate-pulse"></div>
+
+  <div class="relative z-10 p-8">
+
+    <!-- Header Section -->
+    <div class="max-w-6xl mx-auto text-center mb-14">
+
+      <div class="flex justify-center mb-6">
+        {% if profile.profile_picture %}
+          <img src="{{ profile.profile_picture.url }}"
+               class="w-36 h-36 rounded-full object-cover border-4 border-cyan-400 shadow-2xl hover:scale-105 transition duration-300">
+        {% else %}
+          <div class="w-36 h-36 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+            <span class="text-white/50 text-sm">No Image</span>
+          </div>
+        {% endif %}
+      </div>
+
+      <h1 class="text-5xl font-extrabold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+        Welcome back, {{ request.user.username }} 🚀
+      </h1>
+
+      <p class="text-white/60 mt-4 text-lg">
+        Your AI-powered personalized career intelligence hub
+      </p>
+
+    </div>
+
+
+    <!-- Cards Grid -->
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+
+      <!-- Profile Card -->
+      <div class="group bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-7 shadow-xl hover:shadow-cyan-500/30 hover:-translate-y-2 transition duration-300">
+        <h3 class="text-2xl font-bold mb-4">🎯 Profile Overview</h3>
+
+        <p class="text-white/70">Interest</p>
+        <p class="text-cyan-300 font-semibold mb-4">
+          {{ profile.interest|default:"Not set yet" }}
+        </p>
+
+        <p class="text-white/70 mb-2">Skills</p>
+        <div class="flex flex-wrap gap-2">
+          {% for skill in profile.skills.all %}
+            <span class="bg-cyan-400/20 border border-cyan-300 text-cyan-200 px-3 py-1 rounded-full text-sm">
+              {{ skill.name }}
+            </span>
+          {% empty %}
+            <span class="text-red-300">No skills added</span>
+          {% endfor %}
+        </div>
+
+        <a href="{% url 'edit_profile' %}"
+           class="mt-6 block text-center bg-gradient-to-r from-cyan-400 to-blue-500 py-2 rounded-xl font-semibold hover:scale-105 transition">
+          Edit Profile ✏️
+        </a>
+      </div>
+
+
+      <!-- Progress Card -->
+      <div class="group bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-7 shadow-xl hover:shadow-green-500/30 hover:-translate-y-2 transition duration-300">
+        <h3 class="text-2xl font-bold mb-6">📊 Completion</h3>
+
+        <div class="relative w-full h-5 bg-white/20 rounded-full overflow-hidden">
+          <div class="absolute top-0 left-0 h-5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full transition-all duration-700"
+               style="width: {{ completion }}%">
+          </div>
+        </div>
+
+        <p class="mt-4 text-xl font-bold text-green-400">
+          {{ completion }}% Completed
+        </p>
+
+        {% if completion < 100 %}
+          <p class="text-white/60 mt-2 text-sm">
+            Complete your profile for better AI accuracy.
+          </p>
+        {% else %}
+          <p class="text-green-300 mt-2 text-sm">
+            🎉 You're all set!
+          </p>
+        {% endif %}
+      </div>
+
+
+      <!-- AI Recommendation Card -->
+      <div class="group bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-7 shadow-xl hover:shadow-purple-500/30 hover:-translate-y-2 transition duration-300">
+
+        <h3 class="text-2xl font-bold mb-6">🤖 AI Career Insight</h3>
+
+        {% if career %}
+          <p class="text-white/60">Top Match</p>
+
+          <a href="{% url 'career_detail' career.id %}"
+             class="block mt-2 text-3xl font-extrabold text-green-400 hover:underline">
+            {{ career.name }}
+          </a>
+        {% if career.category %}
+          <p class="text-sm text-cyan-300 mt-1">
+            Category: {{ career.category.name }}
+          </p>
+        {% endif %}
+        
+          <p class="mt-3 text-sm text-white/70">
+            Match Score:
+            <span class="text-green-400 font-bold">
+              {{ all_careers.0.1 }}%
+            </span>
+          </p>
+
+          {% if all_careers|length > 1 %}
+            <div class="mt-4">
+              <h4 class="font-semibold mb-2">Other Matches</h4>
+              <ul class="space-y-1 text-sm">
+                {% for c, score in all_careers %}
+                  {% if c != career %}
+                    <li>
+                      <a href="{% url 'career_detail' c.id %}"
+                         class="text-cyan-300 hover:underline">
+                        {{ c.name }}
+                      </a>
+                      – {{ score }}%
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+        {% else %}
+          <p class="text-red-300">
+            No AI recommendation yet 🚧
+          </p>
+          <p class="text-sm text-white/60 mt-2">
+            Add skills & interest to unlock AI suggestions.
+          </p>
+        {% endif %}
+
+        <a href="{% url 'career_quiz' %}"
+           class="mt-6 block text-center bg-gradient-to-r from-purple-500 to-pink-500 py-2 rounded-xl font-semibold hover:scale-105 transition">
+          Take Career Quiz 🧪
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

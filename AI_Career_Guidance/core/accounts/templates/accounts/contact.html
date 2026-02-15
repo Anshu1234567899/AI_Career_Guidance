@@ -1,0 +1,98 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="max-w-xl mx-auto p-6 bg-white rounded-2xl shadow-2xl mt-12
+            animate-fade-in
+            border-2 border-cyan-400">
+
+    <h2 class="text-3xl font-extrabold mb-6 text-center text-cyan-500 animate-pulse">
+        📩 Contact Us
+    </h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="text-green-500 mb-4 text-center font-medium animate-bounce">
+                {{ message }}
+            </p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="relative group">
+            <label for="{{ form.name.id_for_label }}" class="block mb-2 font-semibold text-gray-700 group-hover:text-cyan-500 transition-colors">
+                {{ form.name.label }}
+            </label>
+            <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}"
+                   value="{{ form.name.value }}"
+                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400 transition-all duration-300 shadow-sm"
+                   placeholder="Your Name">
+            {% for error in form.name.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="relative group">
+    <label for="{{ form.subject.id_for_label }}" class="block mb-2 font-semibold text-gray-700 group-hover:text-cyan-500 transition-colors">
+        {{ form.subject.label }}
+    </label>
+    <input type="text" name="{{ form.subject.name }}" id="{{ form.subject.id_for_label }}"
+           value="{{ form.subject.value }}"
+           class="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400 transition-all duration-300 shadow-sm"
+           placeholder="Subject">
+    {% for error in form.subject.errors %}
+        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+    {% endfor %}
+</div>
+
+
+        <div class="relative group">
+            <label for="{{ form.email.id_for_label }}" class="block mb-2 font-semibold text-gray-700 group-hover:text-cyan-500 transition-colors">
+                {{ form.email.label }}
+            </label>
+            <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
+                   value="{{ form.email.value }}"
+                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400 transition-all duration-300 shadow-sm"
+                   placeholder="Your Email">
+            {% for error in form.email.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="relative group">
+            <label for="{{ form.message.id_for_label }}" class="block mb-2 font-semibold text-gray-700 group-hover:text-cyan-500 transition-colors">
+                {{ form.message.label }}
+            </label>
+            <textarea name="{{ form.message.name }}" id="{{ form.message.id_for_label }}"
+                      class="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400 transition-all duration-300 shadow-sm"
+                      rows="5" placeholder="Your Message">{{ form.message.value }}</textarea>
+            {% for error in form.message.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <button type="submit"
+                class="w-full py-3 bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-bold rounded-xl
+                       shadow-lg hover:scale-105 hover:from-blue-500 hover:to-cyan-500 transition-transform duration-300">
+            Send Message
+        </button>
+    </form>
+
+    <p class="mt-6 text-center text-gray-500 text-sm">
+        We'll respond to your query within 24 hours!
+    </p>
+</div>
+
+<!-- Optional animations using Tailwind -->
+<style>
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.7s ease-out forwards;
+}
+</style>
+{% endblock %}

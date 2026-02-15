@@ -1,0 +1,187 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- HERO SECTION WITH AUTO IMAGE SLIDER -->
+<section class="relative h-[85vh] overflow-hidden">
+<div class="absolute inset-0">
+  <div class="hero-slide absolute inset-0 bg-cover bg-bottom opacity-100 transition-opacity duration-1000"
+       style="background-image: url('{% static "images/pg.jpg" %}');"></div>
+
+  <div class="hero-slide absolute inset-0 bg-cover bg-bottom opacity-0 transition-opacity duration-1000"
+       style="background-image: url('{% static "images/cd.jpg" %}');"></div>
+
+  <div class="hero-slide absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-1000"
+       style="background-image: url('{% static "images/cg.jpg" %}');"></div>
+</div>
+
+  <!-- Dark Overlay -->
+  <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+
+  <!-- Hero Content -->
+  <div class="relative z-10 flex items-center justify-center h-full text-center text-white px-6">
+    <div>
+      <h1 class="text-5xl font-extrabold mb-6">
+        Smart Career Guidance System
+      </h1>
+      <p class="text-xl mb-10 max-w-3xl mx-auto">
+        AI-powered platform that analyzes your skills and interests to recommend the best career path for your future.
+      </p>
+
+      <!-- NEW 2 OPTIONS -->
+      <div class="flex flex-col md:flex-row gap-6 justify-center mb-10">
+        <a href="{% url 'skill_based' %}" 
+           class="bg-white text-blue-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-200 transition">
+           I Know My Interest → Explore Careers
+        </a>
+        <a href="{% url 'career_quiz' %}" 
+           class="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-500 transition">
+           I’m Confused → Take AI Career Quiz
+        </a>
+      </div>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}"
+           class="bg-white text-blue-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-200 transition">
+           Go to Dashboard →
+        </a>
+      {% else %}
+        <a href="{% url 'login' %}?next={% url 'dashboard' %}"
+           class="bg-white text-blue-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-200 transition">
+           Get Started →
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="py-20 bg-gray-50">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="text-4xl font-bold text-center mb-14">Why Choose Our Platform?</h2>
+
+    <div class="grid md:grid-cols-3 gap-10 text-center">
+      <div class="bg-white p-8 rounded-xl shadow hover:shadow-xl transition">
+        <div class="text-blue-600 text-5xl mb-4">🤖</div>
+        <h3 class="text-xl font-semibold mb-2">AI Recommendations</h3>
+        <p class="text-gray-600">
+          Smart rule-based AI suggests careers based on your skills & interests.
+        </p>
+      </div>
+
+      <div class="bg-white p-8 rounded-xl shadow hover:shadow-xl transition">
+        <div class="text-green-600 text-5xl mb-4">📊</div>
+        <h3 class="text-xl font-semibold mb-2">Skill Analysis</h3>
+        <p class="text-gray-600">
+          Analyze your current skills and understand where you stand.
+        </p>
+      </div>
+
+      <div class="bg-white p-8 rounded-xl shadow hover:shadow-xl transition">
+        <div class="text-purple-600 text-5xl mb-4">🚀</div>
+        <h3 class="text-xl font-semibold mb-2">Career Roadmaps</h3>
+        <p class="text-gray-600">
+          Get step-by-step learning paths and course recommendations.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="py-20 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="text-4xl font-bold text-center mb-16">How It Works</h2>
+
+    <div class="grid md:grid-cols-4 gap-8 text-center">
+      <div>
+        <div class="text-4xl mb-3">📝</div>
+        <h4 class="font-semibold text-lg">Create Profile</h4>
+        <p class="text-gray-600">Add your interests & skills</p>
+      </div>
+
+      <div>
+        <div class="text-4xl mb-3">⚙️</div>
+        <h4 class="font-semibold text-lg">AI Processing</h4>
+        <p class="text-gray-600">System analyzes your data</p>
+      </div>
+
+      <div>
+        <div class="text-4xl mb-3">🎯</div>
+        <h4 class="font-semibold text-lg">Career Match</h4>
+        <p class="text-gray-600">Get best career suggestions</p>
+      </div>
+
+      <div>
+        <div class="text-4xl mb-3">📈</div>
+        <h4 class="font-semibold text-lg">Growth Path</h4>
+        <p class="text-gray-600">Follow roadmap & courses</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAREERS SECTION -->
+<section class="py-20 bg-gray-100">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="text-4xl font-bold text-center mb-12">Popular Career Paths</h2>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-xl font-semibold mb-2">Data Scientist</h3>
+        <p class="text-gray-600">Analyze data, build ML models, and drive decisions.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-xl font-semibold mb-2">Software Developer</h3>
+        <p class="text-gray-600">Build applications, systems, and scalable software.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-xl font-semibold mb-2">Web Developer</h3>
+        <p class="text-gray-600">Create responsive and interactive websites.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="py-24 bg-indigo-700 text-white text-center">
+  <h2 class="text-4xl font-bold mb-6">Ready to Discover Your Career?</h2>
+  <p class="mb-10 text-lg">Start your journey with AI-powered guidance today.</p>
+
+  {% if user.is_authenticated %}
+    <a href="{% url 'dashboard' %}"
+       class="bg-white text-indigo-700 px-8 py-4 rounded-lg text-lg font-semibold">
+       Go to Dashboard
+    </a>
+  {% else %}
+    <a href="{% url 'login' %}?next={% url 'dashboard' %}"
+       class="bg-white text-indigo-700 px-8 py-4 rounded-lg text-lg font-semibold">
+       Get Started Now
+    </a>
+  {% endif %}
+</section>
+
+<!-- AUTO HERO SLIDER SCRIPT -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const slides = document.querySelectorAll(".hero-slide");
+    let currentSlide = 0;
+
+    setInterval(() => {
+      slides[currentSlide].classList.remove("opacity-100");
+      slides[currentSlide].classList.add("opacity-0");
+
+      currentSlide = (currentSlide + 1) % slides.length;
+
+      slides[currentSlide].classList.remove("opacity-0");
+      slides[currentSlide].classList.add("opacity-100");
+
+    }, 4000);
+  });
+</script>
+
+{% endblock %}

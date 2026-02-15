@@ -1,0 +1,111 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+
+<!-- BACKGROUND -->
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] relative overflow-hidden">
+
+  <!-- Floating particles -->
+  <span class="absolute w-72 h-72 bg-cyan-400/20 rounded-full -top-20 -left-20 blur-3xl"></span>
+  <span class="absolute w-96 h-96 bg-purple-400/20 rounded-full -bottom-32 -right-32 blur-3xl"></span>
+
+  <!-- 3D CARD -->
+  <div id="card"
+       class="relative bg-white/15 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-10 w-[400px] text-white transform transition-all duration-300">
+
+    <h2 class="text-3xl font-extrabold text-center mb-2">
+      Create Account ✨
+    </h2>
+    <p class="text-center text-sm mb-8 text-white/80">
+      Start your smart career journey today
+    </p>
+
+    <form method="POST" id="registerForm" class="space-y-5">
+      {% csrf_token %}
+
+      <!-- USERNAME -->
+      <div class="relative">
+        <span class="absolute left-3 top-3 text-white/70">👤</span>
+        <input name="username" required
+          placeholder="Username"
+          class="w-full pl-10 py-3 rounded-lg bg-white/20 border border-white/30 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-cyan-300">
+      </div>
+
+      <!-- EMAIL -->
+      <div class="relative">
+        <span class="absolute left-3 top-3 text-white/70">📧</span>
+        <input name="email" type="email" required
+          placeholder="Email address"
+          class="w-full pl-10 py-3 rounded-lg bg-white/20 border border-white/30 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-cyan-300">
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="relative">
+        <span class="absolute left-3 top-3 text-white/70">🔒</span>
+        <input id="password" name="password" type="password" required
+          placeholder="Create password"
+          onkeyup="checkStrength()"
+          class="w-full pl-10 pr-12 py-3 rounded-lg bg-white/20 border border-white/30 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-cyan-300">
+        <span onclick="togglePassword()" class="absolute right-4 top-3 cursor-pointer">👁️</span>
+      </div>
+
+      <!-- PASSWORD STRENGTH -->
+      <div class="text-sm">
+        Strength:
+        <span id="strength" class="font-semibold text-red-300">Weak</span>
+      </div>
+
+      {% if error %}
+        <p class="text-red-300 text-sm text-center">{{ error }}</p>
+      {% endif %}
+
+      <!-- BUTTON -->
+      <button
+        class="w-full bg-cyan-400 text-gray-900 py-3 rounded-lg font-bold hover:bg-cyan-300 transition transform hover:scale-[1.03]">
+        Create Account →
+      </button>
+    </form>
+
+    <p class="text-center text-sm mt-6 text-white/80">
+      Already have an account?
+      <a href="{% url 'login' %}" class="underline hover:text-white">Login</a>
+    </p>
+
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+/* 3D Tilt Effect */
+const card = document.getElementById("card");
+document.addEventListener("mousemove", (e) => {
+  let x = (window.innerWidth / 2 - e.pageX) / 40;
+  let y = (window.innerHeight / 2 - e.pageY) / 40;
+  card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+});
+
+/* Password Toggle */
+function togglePassword() {
+  const pwd = document.getElementById("password");
+  pwd.type = pwd.type === "password" ? "text" : "password";
+}
+
+/* Password Strength */
+function checkStrength() {
+  const pwd = document.getElementById("password").value;
+  const strength = document.getElementById("strength");
+
+  if (pwd.length < 6) {
+    strength.textContent = "Weak";
+    strength.className = "font-semibold text-red-300";
+  } else if (pwd.match(/[A-Z]/) && pwd.match(/[0-9]/)) {
+    strength.textContent = "Strong";
+    strength.className = "font-semibold text-green-300";
+  } else {
+    strength.textContent = "Medium";
+    strength.className = "font-semibold text-yellow-300";
+  }
+}
+</script>
+
+{% endblock %}

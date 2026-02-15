@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Career Guidance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+
+  * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+body {
+  position: relative;
+}
+html {
+  height: 100%;
+}
+
+
+    /* Smooth floating nav links */
+    .float-link {
+      position: relative;
+      transition: all 0.35s ease;
+    }
+
+    .float-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 0;
+      height: 2px;
+      background: #fde047;
+      transition: width 0.35s ease;
+    }
+
+    .float-link:hover::after {
+      width: 100%;
+    }
+
+    .float-link:hover {
+      transform: translateY(-2px) scale(1.05);
+    }
+
+    /* Glassmorphism navbar */
+    .glass-nav {
+      backdrop-filter: blur(14px);
+      background: linear-gradient(
+        to right,
+        rgba(37, 99, 235, 0.85),
+        rgba(79, 70, 229, 0.85)
+      );
+    }
+
+/* ---------- FLOATING BOT ICON ---------- */
+#ai-chatbot-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 42px;
+    cursor: pointer;
+    z-index: 1000;
+    animation: floatBot 2.5s ease-in-out infinite;
+}
+
+@keyframes floatBot {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* ---------- FULLSCREEN OVERLAY ---------- */
+#ai-chatbot-box {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 1001;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ---------- CHAT WINDOW ---------- */
+.ai-chat-window {
+    background: #fff;
+    width: 90%;
+    max-width: 700px;
+    height: 90%;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+}
+
+/* ---------- HEADER ---------- */
+.ai-chat-header {
+    background: linear-gradient(135deg, #4A90E2, #357ABD);
+    color: white;
+    padding: 16px 18px;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ai-chat-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+/* ---------- MESSAGES AREA ---------- */
+#chat-messages {
+    flex: 1;
+    padding: 18px;
+    overflow-y: auto;
+    background: #f4f6fa;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- MESSAGE BUBBLES ---------- */
+.chat-message {
+    margin: 10px 0;
+    padding: 12px 16px;
+    border-radius: 18px;
+    max-width: 75%;
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.22);
+}
+
+/* USER MESSAGE */
+.chat-user {
+    background: #4A90E2;
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+}
+
+/* BOT MESSAGE */
+.chat-bot {
+    background: #e6e6e6;
+    color: #000;
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+}
+
+/* ---------- INPUT AREA ---------- */
+.ai-chat-input {
+    display: flex;
+    border-top: 1px solid #ccc;
+    background: #fff;
+}
+
+.ai-chat-input input {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 16px;
+    border: none;
+    outline: none;
+}
+
+.ai-chat-input button {
+    padding: 12px 22px;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.ai-chat-input button:hover {
+    background: #357ABD;
+}
+
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 min-h-screen flex flex-col">
+
+<!-- NAVBAR -->
+<nav class="glass-nav shadow-2xl sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+    <!-- LOGO -->
+    <h1 class="text-2xl font-extrabold tracking-wide text-white flex items-center gap-2">
+      🤖 <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-300">
+        AI Career Guidance
+      </span>
+    </h1>
+
+    <!-- NAV LINKS -->
+    <div class="flex gap-8 items-center text-white font-medium">
+
+      <a href="/" class="float-link hover:text-yellow-300">Home</a>
+      <a href="{% url 'contact' %}" class="float-link hover:text-yellow-300">Contact</a>
+
+      {% if user.is_authenticated %}
+
+        <a href="{% url 'dashboard' %}" class="float-link hover:text-yellow-300">
+          Dashboard
+        </a>
+
+        {% if user.is_staff %}
+          <a href="{% url 'admin_dashboard' %}"
+             class="px-4 py-2 rounded-xl font-semibold
+                    bg-gradient-to-r from-yellow-400 to-orange-400
+                    text-black shadow-lg hover:scale-105 transition">
+            Admin Panel
+          </a>
+        {% endif %}
+
+        <!-- LOGOUT -->
+        <form method="POST" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit"
+                  class="px-4 py-2 rounded-xl font-semibold
+                         bg-red-500 hover:bg-red-600
+                         shadow-lg transition">
+            Logout
+          </button>
+        </form>
+
+      {% else %}
+
+        <a href="{% url 'login' %}"
+           class="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 transition">
+          Login
+        </a>
+
+        <a href="{% url 'register' %}"
+           class="px-4 py-2 rounded-xl
+                  bg-gradient-to-r from-green-400 to-emerald-500
+                  text-black font-semibold shadow-lg hover:scale-105 transition">
+          Register
+        </a>
+
+      {% endif %}
+
+    </div>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<main class="flex-1">
+  {% block content %}{% endblock %}
+</main>
+
+{% if user.is_authenticated %}
+
+<!-- Floating AI Chatbot Button -->
+<div id="ai-chatbot-icon" onclick="toggleChatbot()">
+    🤖
+</div>
+
+<!-- Fullscreen Chatbot Window -->
+<div id="ai-chatbot-box">
+    <div class="ai-chat-window">
+        
+        <!-- Header -->
+        <div class="ai-chat-header">
+            <span>AI Career Mentor</span>
+            <button onclick="toggleChatbot()">✖</button>
+        </div>
+        
+        <!-- Messages -->
+        <div id="chat-messages"></div>
+        
+        <!-- Input -->
+        <div class="ai-chat-input">
+            <input 
+                type="text" 
+                id="user-input" 
+                placeholder="Ask about your career..."
+            >
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script>
+function toggleChatbot() {
+    const box = document.getElementById('ai-chatbot-box');
+    box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+}
+
+/* ---------- ADD MESSAGE (USER) ---------- */
+function addMessage(message, sender='bot') {
+    const chat = document.getElementById('chat-messages');
+    const msgDiv = document.createElement('div');
+
+    msgDiv.textContent = message;
+    msgDiv.style.margin = '10px 0';
+    msgDiv.style.padding = '10px 14px';
+    msgDiv.style.borderRadius = '18px';
+    msgDiv.style.maxWidth = '75%';
+    msgDiv.style.wordBreak = 'break-word';
+    msgDiv.style.whiteSpace = 'pre-wrap';
+    msgDiv.style.boxShadow = '0 6px 18px rgba(0,0,0,0.25)';
+    msgDiv.style.fontSize = '15px';
+
+    if(sender === 'user') {
+        msgDiv.style.background = '#4A90E2';
+        msgDiv.style.color = '#fff';
+        msgDiv.style.alignSelf = 'flex-end';
+    } else {
+        msgDiv.style.background = '#e0e0e0';
+        msgDiv.style.color = '#000';
+        msgDiv.style.alignSelf = 'flex-start';
+    }
+
+    chat.appendChild(msgDiv);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+/* ---------- AI TYPING EFFECT ---------- */
+function typeWriterEffect(text) {
+    const chat = document.getElementById('chat-messages');
+    const msgDiv = document.createElement('div');
+
+    msgDiv.style.margin = '10px 0';
+    msgDiv.style.padding = '10px 14px';
+    msgDiv.style.borderRadius = '18px';
+    msgDiv.style.maxWidth = '75%';
+    msgDiv.style.wordBreak = 'break-word';
+    msgDiv.style.whiteSpace = 'pre-wrap';
+    msgDiv.style.background = '#e0e0e0';
+    msgDiv.style.boxShadow = '0 6px 18px rgba(0,0,0,0.25)';
+    msgDiv.style.alignSelf = 'flex-start';
+    msgDiv.style.fontSize = '15px';
+
+    chat.appendChild(msgDiv);
+    chat.scrollTop = chat.scrollHeight;
+
+    let i = 0;
+    function typeChar() {
+        if (i < text.length) {
+            msgDiv.textContent += text.charAt(i);
+            i++;
+            chat.scrollTop = chat.scrollHeight;
+            setTimeout(typeChar, 18); // typing speed
+        }
+    }
+    typeChar();
+}
+
+/* ---------- SEND MESSAGE ---------- */
+function sendMessage() {
+    const input = document.getElementById('user-input');
+    const message = input.value.trim();
+    if (!message) return;
+
+    addMessage(message, 'user');
+    input.value = '';
+
+    fetch("{% url 'career_chatbot' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        typeWriterEffect(data.reply); // 🔥 REAL CHAT FEEL
+    })
+    .catch(err => {
+        addMessage("AI backend error", 'bot');
+        console.error(err);
+    });
+}
+</script>
+
+{% endif %}
+
+
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-white py-10 mt-auto">
+  <div class="max-w-6xl mx-auto text-center space-y-3">
+    <p class="text-sm tracking-wide">
+      © 2025 <span class="font-semibold text-cyan-400">AI Career Guidance</span>
+    </p>
+    <p class="text-xs text-gray-400">
+      Crafted with ❤️ using Django & TailwindCSS
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

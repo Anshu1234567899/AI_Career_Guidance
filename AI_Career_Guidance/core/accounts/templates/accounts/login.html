@@ -1,0 +1,102 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+
+<!-- BACKGROUND -->
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-700 via-purple-700 to-blue-700 relative overflow-hidden">
+
+  <!-- Floating Circles -->
+  <div class="absolute w-72 h-72 bg-white/10 rounded-full -top-20 -left-20"></div>
+  <div class="absolute w-96 h-96 bg-white/10 rounded-full -bottom-32 -right-32"></div>
+
+  <!-- LOGIN CARD -->
+  <div class="backdrop-blur-xl bg-white/20 border border-white/30 rounded-2xl shadow-2xl p-10 w-[380px] text-white animate-slide-up">
+
+    <h2 class="text-3xl font-extrabold text-center mb-2">
+      Welcome Back 👋
+    </h2>
+    <p class="text-center text-sm mb-8 text-white/80">
+      Login to your Smart Career Dashboard
+    </p>
+
+    <form method="POST" id="loginForm" class="space-y-5">
+      {% csrf_token %}
+
+      <!-- USERNAME -->
+      <div class="relative">
+        <span class="absolute left-3 top-3 text-white/70">👤</span>
+        <input
+          name="username"
+          placeholder="Username"
+          required
+          class="w-full pl-10 pr-4 py-3 rounded-lg bg-white/20 border border-white/30 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white"
+        >
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="relative">
+        <span class="absolute left-3 top-3 text-white/70">🔒</span>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Password"
+          required
+          class="w-full pl-10 pr-12 py-3 rounded-lg bg-white/20 border border-white/30 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white"
+        >
+        <span
+          onclick="togglePassword()"
+          class="absolute right-4 top-3 cursor-pointer text-white/70"
+        >👁️</span>
+      </div>
+
+      {% if error %}
+        <p class="text-red-300 text-sm text-center">{{ error }}</p>
+      {% endif %}
+
+      <!-- BUTTON -->
+      <button
+        class="w-full bg-white text-indigo-700 py-3 rounded-lg font-semibold hover:bg-gray-100 transition transform hover:scale-[1.02]"
+      >
+        Login →
+      </button>
+    </form>
+
+    <!-- FOOTER -->
+    <p class="text-center text-sm mt-6 text-white/80">
+      New here?
+      <a href="/register/" class="underline hover:text-white">Create Account</a>
+    </p>
+
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+function togglePassword() {
+  const pwd = document.getElementById("password");
+  pwd.type = pwd.type === "password" ? "text" : "password";
+}
+
+// animation
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelector(".animate-slide-up").classList.add("opacity-100");
+});
+</script>
+
+<style>
+.animate-slide-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideUp 0.8s ease forwards;
+}
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+{% endblock %}

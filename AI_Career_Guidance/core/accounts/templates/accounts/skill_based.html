@@ -1,0 +1,85 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<section class="py-20 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-6">
+    <h2 class="text-5xl font-bold text-center mb-16 text-gray-800">
+      Explore Careers Based on Your Interest
+    </h2>
+
+    {% if careers and careers|length > 0 %}
+      <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        {% for career in careers %}
+        <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 duration-300 overflow-hidden">
+
+          {% if career.image %}
+          <div class="relative">
+            <img src="{{ career.image.url }}" alt="{{ career.name }}" class="w-full h-48 object-cover">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-transparent to-transparent p-4">
+              <h3 class="text-white text-xl font-semibold">{{ career.name }}</h3>
+            </div>
+          </div>
+          {% else %}
+          <h3 class="text-xl font-semibold p-4">{{ career.name }}</h3>
+          {% endif %}
+
+          <div class="p-6">
+            <p class="text-gray-600 mb-4 line-clamp-3">
+              {{ career.description }}
+            </p>
+
+            {% if career.average_salary %}
+            <p class="text-gray-700 font-medium mb-2">
+              💰 Average Salary:
+              <span class="text-indigo-600">{{ career.average_salary }}</span>
+            </p>
+            {% endif %}
+
+            {% if career.future_scope %}
+            <p class="text-gray-700 font-medium mb-4">
+              🚀 Future Scope:
+              <span class="text-indigo-600">
+                {{ career.future_scope|truncatewords:15 }}
+              </span>
+            </p>
+            {% endif %}
+
+            <a href="{% url 'career_detail' career.id %}"
+               class="inline-block bg-indigo-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">
+               View Details
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <!-- Better Empty State -->
+      <div class="max-w-xl mx-auto bg-white shadow-lg rounded-xl p-8 text-center">
+        <div class="mb-4 text-indigo-600 text-5xl">🔍</div>
+
+        <h3 class="text-2xl font-bold mb-4 text-gray-800">
+          No Matching Careers Found
+        </h3>
+
+        <p class="text-gray-600 mb-6">
+          We couldn't find careers based on your current skills or interests.
+          Please update your profile or take the AI Career Quiz to get better recommendations.
+        </p>
+
+        <div class="flex justify-center gap-4">
+          <a href="{% url 'dashboard' %}"
+             class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+             Update Profile
+          </a>
+
+          {% comment %} <a href="{% url 'career_quiz' %}"
+             class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition">
+             Take Career Quiz
+          </a> {% endcomment %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

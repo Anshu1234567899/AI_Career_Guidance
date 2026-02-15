@@ -1,0 +1,37 @@
+{% extends 'accounts/admin/base_admin.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold text-cyan-400 mb-6">
+            {% if form.instance.id %}Edit User{% else %}Add User{% endif %}
+        </h2>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div>
+                    <label class="block mb-1 text-gray-300 font-medium" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <input type="{{ field.field.widget.input_type }}" 
+                           name="{{ field.html_name }}" 
+                           value="{{ field.value }}" 
+                           class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400">
+
+                    {% if field.help_text %}
+                        <p class="text-gray-400 text-sm mt-1">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="flex justify-between mt-6">
+                <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 px-6 py-2 rounded-lg text-white font-semibold">Save</button>
+                <a href="{% url 'admin_users' %}" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg text-white font-semibold">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

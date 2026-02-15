@@ -1,0 +1,80 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f2027] via-[#1c2b35] to-[#2c5364] px-6 py-20 text-white">
+
+  <div class="max-w-2xl w-full bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-12 text-center shadow-2xl animate-fadeUp">
+
+    <!-- Badge -->
+    <div class="inline-block px-5 py-2 rounded-full bg-cyan-400/20 text-cyan-300 text-sm font-semibold mb-8 border border-cyan-400/30">
+      🎯 Career Insight Generated
+    </div>
+
+    <!-- Career Circle -->
+    <div class="relative mx-auto mb-8 w-40 h-40 flex items-center justify-center">
+      <div class="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 blur-2xl opacity-40 animate-pulse"></div>
+
+      <div class="relative w-36 h-36 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-lg font-bold shadow-2xl text-center px-3">
+        {{ career }}
+      </div>
+    </div>
+
+    <!-- Career Title -->
+    <h2 class="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+      {{ career }}
+    </h2>
+
+    <!-- Dynamic Description -->
+    <p class="text-white/80 mb-8 text-lg leading-relaxed">
+      {{ description }}
+    </p>
+
+    <!-- Score Breakdown -->
+<div class="bg-white/5 rounded-2xl p-6 mb-8 text-left space-y-3">
+  <h3 class="text-xl font-semibold text-cyan-300 mb-2">
+    📊 Your Skill Breakdown:
+  </h3>
+
+  {% for cat, score in scores.items %}
+    <p>
+      {{ cat.name }} :
+      <span class="font-bold text-cyan-300">{{ score }}</span>
+    </p>
+  {% endfor %}
+
+  <hr class="border-white/10 my-3">
+
+  <p class="text-lg">
+    🎯 Final Category:
+    <span class="font-bold text-cyan-300">{{ category }}</span>
+  </p>
+
+  <p class="text-lg">
+    ⭐ Final Score:
+    <span class="font-bold text-cyan-300">{{ final_score }}</span>
+  </p>
+</div>
+
+
+    <!-- CTA Button -->
+    <a href="{% url 'dashboard' %}"
+       class="inline-block px-10 py-4 rounded-3xl bg-gradient-to-r from-cyan-400 to-blue-500 text-gray-900 font-bold text-lg shadow-xl hover:scale-105 hover:shadow-cyan-400/40 transition duration-300">
+      🚀 Go to Dashboard
+    </a>
+
+  </div>
+
+</div>
+
+<style>
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeUp {
+  animation: fadeUp 0.8s ease forwards;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'accounts/admin/base_admin.html' %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6 text-cyan-400">🎯 Career Management</h1>
+
+<!-- Search Form -->
+<form method="GET" class="mb-6 flex gap-4">
+    <input type="text" name="search" value="{{ search }}"
+           placeholder="Search career..."
+           class="px-4 py-2 rounded-lg bg-gray-700 text-white w-64">
+
+    <button type="submit"
+            class="px-4 py-2 bg-cyan-400 text-black rounded-lg font-semibold hover:bg-cyan-500">
+        🔍 Search
+    </button>
+</form>
+
+<!-- Add Career Button -->
+<a href="{% url 'admin_career_add' %}" 
+   class="inline-block mb-4 px-4 py-2 bg-cyan-400 text-black rounded-lg hover:bg-cyan-500 font-semibold">
+   ➕ Add Career
+</a>
+
+<!-- Careers List -->
+<div class="space-y-4">
+  {% for career in careers %}
+  <div class="bg-gray-800 p-5 rounded-xl flex justify-between items-center shadow-lg hover:bg-gray-700 transition">
+    <div>
+      <h3 class="text-xl font-bold text-white">{{ career.name }}</h3>
+      <p class="text-gray-400">Average Salary: {{ career.average_salary }}</p>
+      <p class="text-gray-400">Future Scope: {{ career.future_scope }}</p>
+    </div>
+    <div class="space-x-3">
+      <a href="{% url 'admin_career_edit' career.id %}" 
+         class="px-3 py-1 bg-cyan-400 hover:bg-cyan-500 text-black rounded-lg font-semibold">
+         Edit
+      </a>
+      <form action="{% url 'admin_career_delete' career.id %}" method="POST" class="inline">
+          {% csrf_token %}
+          <button type="submit" onclick="return confirm('Delete career?')"
+                  class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold">
+              Delete
+          </button>
+      </form>
+    </div>
+  </div>
+  {% empty %}
+    <p class="text-gray-400 text-center">No careers found.</p>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+<div class="flex justify-center items-center mt-6 space-x-2">
+    {% if careers.has_previous %}
+        <a href="?page={{ careers.previous_page_number }}&search={{ search }}"
+           class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded">Prev</a>
+    {% endif %}
+
+    <span class="px-4 py-1 bg-cyan-500 text-black rounded">
+        Page {{ careers.number }} of {{ careers.paginator.num_pages }}
+    </span>
+
+    {% if careers.has_next %}
+        <a href="?page={{ careers.next_page_number }}&search={{ search }}"
+           class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded">Next</a>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'accounts/admin/base_admin.html' %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6 text-cyan-400">📊 Admin Dashboard</h1>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
+        <h2 class="text-xl font-semibold text-white">Users</h2>
+        <p class="text-cyan-400 text-3xl font-bold">{{ total_users }}</p>
+    </div>
+
+    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
+        <h2 class="text-xl font-semibold text-white">Careers</h2>
+        <p class="text-cyan-400 text-3xl font-bold">{{ total_careers }}</p>
+    </div>
+
+    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
+        <h2 class="text-xl font-semibold text-white">Skills</h2>
+        <p class="text-cyan-400 text-3xl font-bold">{{ total_skills }}</p>
+    </div>
+
+    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
+        <h2 class="text-xl font-semibold text-white">Quiz Questions</h2>
+        <p class="text-cyan-400 text-3xl font-bold">{{ total_quiz_questions }}</p>
+        {% comment %} <a href="{% url 'admin_quiz_list' %}" class="text-sm text-gray-300 hover:text-white block mt-2">
+    Manage Quiz
+</a> {% endcomment %}
+    </div>
+</div>
+
+<!-- Chart.js Canvas -->
+<div class="mt-8 bg-gray-800 p-6 rounded-xl shadow">
+    <canvas id="dashboardChart"></canvas>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('dashboardChart').getContext('2d');
+const dashboardChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Users', 'Careers', 'Skills', 'Quiz Questions'], // 🔥 Quiz added
+        datasets: [{
+            label: 'Total Count',
+            data: [{{ total_users }}, {{ total_careers }}, {{ total_skills }}, {{ total_quiz_questions }}],
+            backgroundColor: [
+                'rgba(14, 116, 144, 0.8)',
+                'rgba(34, 197, 94, 0.8)',
+                'rgba(234, 88, 12, 0.8)',
+                'rgba(168, 85, 247, 0.8)' // 🔥 Quiz color
+            ],
+            borderColor: [
+                'rgba(14, 116, 144, 1)',
+                'rgba(34, 197, 94, 1)',
+                'rgba(234, 88, 12, 1)',
+                'rgba(168, 85, 247, 1)' // 🔥 Quiz border
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                precision: 0
+            }
+        },
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white'
+                }
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

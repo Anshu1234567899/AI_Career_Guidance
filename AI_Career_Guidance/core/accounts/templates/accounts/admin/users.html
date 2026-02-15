@@ -1,0 +1,111 @@
+{% extends 'accounts/admin/base_admin.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <h1 class="text-3xl font-bold text-cyan-400 mb-6">Users</h1>
+
+    <form method="GET" class="mb-6 flex flex-wrap gap-4 items-center">
+
+    <!-- SEARCH -->
+    <input type="text" name="search" value="{{ search }}"
+           placeholder="Search username or email"
+           class="px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none">
+
+    <!-- FILTER -->
+    <select name="status"
+            class="px-4 py-2 rounded-lg bg-gray-700 text-white">
+        <option value="">All Users</option>
+        <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <!-- BUTTON -->
+    <button type="submit"
+            class="px-4 py-2 bg-cyan-400 hover:bg-cyan-500 text-black rounded-lg font-semibold">
+        🔍 Search
+    </button>
+
+</form>
+
+
+    <div class="overflow-x-auto">
+  <form action="{% url 'admin_users_bulk_delete' %}" method="POST" id="bulk-delete-form">
+    {% csrf_token %}
+
+    <table class="w-full border-collapse bg-gray-800 text-white shadow-lg rounded-lg">
+        <thead>
+            <tr class="bg-gray-700">
+                <th class="p-3">
+                    <input type="checkbox" id="select-all">
+                </th>
+                <th class="p-3 text-left">Username</th>
+                <th class="p-3 text-left">Email</th>
+                <th class="p-3 text-left">Active</th>
+                <th class="p-3 text-left">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr class="border-b border-gray-700 hover:bg-gray-700">
+                <td class="p-3">
+                    <input type="checkbox" name="user_ids" value="{{ user.id }}" class="select-user">
+                </td>
+                <td class="p-3">{{ user.username }}</td>
+                <td class="p-3">{{ user.email }}</td>
+                <td class="p-3">{{ user.is_active|yesno:"Yes,No" }}</td>
+                <td class="p-3 space-x-2">
+                    <a href="{% url 'admin_user_edit' user.id %}" class="px-3 py-1 bg-cyan-400 hover:bg-cyan-500 text-black rounded-lg font-semibold">Edit</a>
+                    <form action="{% url 'admin_user_delete' user.id %}" method="POST" class="inline">
+    {% csrf_token %}
+    <button type="submit" onclick="return confirm('Delete user?')" 
+            class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold">
+        Delete
+    </button>
+</form>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Delete Selected Button -->
+    <button type="submit" id="bulk-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg mt-4 hidden">
+        Delete Selected
+    </button>
+
+</form>
+
+
+
+<script>
+const selectAll = document.getElementById('select-all');
+const checkboxes = document.querySelectorAll('.select-user');
+const deleteBtn = document.getElementById('bulk-delete-btn');
+
+// Function to check if any checkbox is selected
+function toggleDeleteBtn() {
+    const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+    deleteBtn.classList.toggle('hidden', !anyChecked);  // show if any checked
+}
+
+// Event for all individual checkboxes
+checkboxes.forEach(cb => cb.addEventListener('change', toggleDeleteBtn));
+
+// Event for "Select All"
+selectAll.addEventListener('change', function() {
+    checkboxes.forEach(cb => cb.checked = this.checked);
+    toggleDeleteBtn();
+});
+</script>
+
+
+
+
+
+    <a href="{% url 'admin_user_add' %}" 
+       class="inline-block mt-6 px-4 py-2 bg-cyan-400 text-black rounded-lg hover:bg-cyan-500 font-semibold">
+       ➕ Add User
+    </a>
+</div>
+{% endblock %}

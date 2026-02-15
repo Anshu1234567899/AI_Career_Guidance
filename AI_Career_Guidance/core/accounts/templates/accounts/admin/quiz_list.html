@@ -1,0 +1,31 @@
+{% extends 'accounts/admin/dashboard.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold text-cyan-400 mb-4">Career Quiz Questions</h2>
+
+<a href="{% url 'admin_quiz_add' %}" class="bg-cyan-500 px-4 py-2 rounded text-white">Add New Question</a>
+
+<table class="mt-4 w-full text-white">
+    <thead>
+        <tr>
+            <th>Question</th>
+            <th>Options</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for q in questions %}
+        <tr>
+            <td>{{ q.question }}</td>
+            <td>
+                {% for opt in q.careerquizoption_set.all %}
+                    {{ opt.option_text }} ({{ opt.score }}), 
+                {% endfor %}
+            </td>
+            <td>
+                <a href="{% url 'admin_quiz_edit' q.id %}" class="text-cyan-400">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
