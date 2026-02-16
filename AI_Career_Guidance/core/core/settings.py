@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import dj_database_url
 import os
 from pathlib import Path
-from turtle import setx
 
 GEMINI_API_KEY= "AIzaSyB9Gbu5lnOmD3vr9W3TkEqJ5e2RUNTidWo"
 
