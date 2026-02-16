@@ -6,7 +6,7 @@ from .views import (
     edit_profile, career_detail,
 
     # admin panel views
-    admin_dashboard, admin_users, admin_careers,contact_view,career_quiz,admin_quiz_add,admin_quiz_edit,skill_based_careers,
+    admin_dashboard, admin_users, admin_careers,contact_view,career_quiz,admin_quiz_add,admin_quiz_edit,skill_based_careers,run_migrations,
     admin_user_edit, admin_user_delete,admin_users_bulk_delete,admin_skills_bulk_delete,admin_quiz_list,admin_quiz_delete,
     admin_career_add, admin_career_edit, admin_career_delete,admin_user_add,admin_skills,admin_skill_add,admin_skill_edit,admin_skill_delete)    
 
@@ -41,6 +41,7 @@ urlpatterns = [
     path('admin-panel/manage-quiz/edit/<int:id>/',admin_quiz_edit, name='admin_quiz_edit'),
     path('admin-panel/manage-quiz/delete/<int:id>/',admin_quiz_delete, name='admin_quiz_delete'),
     path('skill-based/',skill_based_careers, name='skill_based'),
+    path('run-migrations/', run_migrations),
 
 
 

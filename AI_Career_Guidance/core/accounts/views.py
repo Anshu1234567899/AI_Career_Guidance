@@ -18,7 +18,8 @@ from django.core.paginator import Paginator
 from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 from .models import CareerQuizQuestion, CareerQuizOption, CareerQuizResult ,Category
-
+from django.http import HttpResponse
+import subprocess
 
 @never_cache
 @login_required
@@ -568,3 +569,12 @@ def skill_based_careers(request):
         'careers': careers
     })
 
+def run_migrations(request):
+    # Sirf superuser ke liye accessible
+    if request.user.is_superuser:
+        result = subprocess.run(
+            ["python", "manage.py", "migrate", "--noinput"],
+            capture_output=True, text=True
+        )
+        return HttpResponse(f"<pre>{result.stdout}\n{result.stderr}</pre>")
+    return HttpResponse("Not authorized", status=403)
