@@ -74,7 +74,6 @@ TEMPLATES = [
     },
 ]
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.core.settings')
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
