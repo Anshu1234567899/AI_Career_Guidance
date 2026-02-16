@@ -584,3 +584,17 @@ def run_migrations(request):
         text=True
     )
     return HttpResponse(f"<pre>{result.stdout}\n{result.stderr}</pre>")
+
+def create_superuser(request):
+    # Ye secret key ya simple check laga do taki koi aur access na kare
+    if request.GET.get("key") != "mysecret123":
+        return HttpResponse("Not authorized", status=403)
+
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="Admin@123"
+        )
+        return HttpResponse("Superuser created successfully!")
+    return HttpResponse("Superuser already exists.")
