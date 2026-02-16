@@ -13,7 +13,7 @@ import dj_database_url
 import os
 from pathlib import Path
 
-GEMINI_API_KEY= "AIzaSyB9Gbu5lnOmD3vr9W3TkEqJ5e2RUNTidWo"
+GEMINI_API_KEY= "AIzaSyDG_EeMIPCiK78O-yjgsmrxYenMHmY6UMA"
 
 
  
