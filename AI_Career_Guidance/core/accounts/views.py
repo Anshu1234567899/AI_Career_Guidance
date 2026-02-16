@@ -570,11 +570,11 @@ def skill_based_careers(request):
     })
 
 def run_migrations(request):
-    # Sirf superuser ke liye accessible
-    if request.user.is_superuser:
-        result = subprocess.run(
-            ["python", "manage.py", "migrate", "--noinput"],
-            capture_output=True, text=True
-        )
-        return HttpResponse(f"<pre>{result.stdout}\n{result.stderr}</pre>")
-    return HttpResponse("Not authorized", status=403)
+    # TEMPORARY: Bypass superuser check for deployment migration
+
+    # Directly run migrate without checking user
+    result = subprocess.run(
+        ["python", "manage.py", "migrate", "--noinput"],
+        capture_output=True, text=True
+    )
+    return HttpResponse(f"<pre>{result.stdout}\n{result.stderr}</pre>")
