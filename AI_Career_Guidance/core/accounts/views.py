@@ -570,11 +570,17 @@ def skill_based_careers(request):
     })
 
 def run_migrations(request):
-    # TEMPORARY: Bypass superuser check for deployment migration
+    import subprocess
+    import os
+    from django.http import HttpResponse
 
-    # Directly run migrate without checking user
+    # Core folder me jaake migrate run karna
+    core_path = "/opt/render/project/src/AI_Career_Guidance/core"
+    
     result = subprocess.run(
         ["python", "manage.py", "migrate", "--noinput"],
-        capture_output=True, text=True
+        cwd=core_path,            # <--- yahi important hai
+        capture_output=True,
+        text=True
     )
     return HttpResponse(f"<pre>{result.stdout}\n{result.stderr}</pre>")
