@@ -159,10 +159,12 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'patyaldeepanshu05@gmail.com'      # Apna email
-EMAIL_HOST_PASSWORD = 'mjstiwodqfmismfn'       # Gmail App Password
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'patyaldeepanshu05@gmail.com'      # Apna email
+# EMAIL_HOST_PASSWORD = 'mjstiwodqfmismfn'       # Gmail App Password
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")

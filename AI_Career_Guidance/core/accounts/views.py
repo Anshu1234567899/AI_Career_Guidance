@@ -20,6 +20,8 @@ from django.core.mail import send_mail
 from .models import CareerQuizQuestion, CareerQuizOption, CareerQuizResult ,Category
 from django.http import HttpResponse
 import subprocess
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 @never_cache
 @login_required
@@ -398,20 +400,27 @@ def contact_view(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
+            user_email = form.cleaned_data['email']
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
 
-            full_message = f"Message from {name} ({email}):\n\n{message}"
+            full_message = f"Message from {name} ({user_email}):\n\n{message}"
 
-            send_mail(
-                subject,
-                full_message,
-                settings.EMAIL_HOST_USER,       # From email
-                ['patyaldeepanshu05@gmail.com'],     # Apna email jahan receive karna hai
-                fail_silently=False,
+            email_message = Mail(
+                from_email='patyaldeepanshu05@gmail.com',  # Verified sender in SendGrid
+                to_emails='patyaldeepanshu05@gmail.com',   # Jahan message receive karna hai
+                subject=subject,
+                plain_text_content=full_message,
             )
-            messages.success(request, "Your message has been sent! ✅")
+
+            try:
+                sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+                sg.send(email_message)
+                messages.success(request, "Your message has been sent! ✅")
+            except Exception as e:
+                print(str(e))
+                messages.error(request, "Something went wrong. Please try again.")
+
             return redirect('contact')
     else:
         form = ContactForm()
