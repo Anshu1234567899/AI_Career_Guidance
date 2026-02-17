@@ -4,20 +4,22 @@
 {% block content %}
 
 <!-- HERO SECTION WITH AUTO IMAGE SLIDER -->
-<section class="relative min-h-screen md:h-[85vh] overflow-hidden">
+<section class="relative min-h-[90vh] md:h-[85vh] overflow-hidden">
 <div class="absolute inset-0">
-  <div class="hero-slide absolute inset-0 bg-cover bg-bottom opacity-100 transition-opacity duration-1000"
+  <div class="hero-slide absolute inset-0 bg-cover bg-center md:bg-bottom opacity-100 transition-opacity duration-1000"
        style="background-image: url('{% static "images/pg.jpg" %}');"></div>
 
-  <div class="hero-slide absolute inset-0 bg-cover bg-bottom opacity-0 transition-opacity duration-1000"
+  <div class="hero-slide absolute inset-0 bg-cover bg-center md:bg-bottom opacity-0 transition-opacity duration-1000"
        style="background-image: url('{% static "images/cd.jpg" %}');"></div>
 
-  <div class="hero-slide absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-1000"
+  <div class="hero-slide absolute inset-0 bg-cover bg-center md:bg-center opacity-0 transition-opacity duration-1000"
        style="background-image: url('{% static "images/cg.jpg" %}');"></div>
 </div>
 
+
+
   <!-- Dark Overlay -->
-  <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+<div class="absolute inset-0 bg-black/40"></div>
 
   <!-- Hero Content -->
 <div class="relative z-10 flex items-center justify-center h-full text-center text-white px-4 sm:px-6">
