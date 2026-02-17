@@ -24,7 +24,8 @@
       </div>
 
       <h1 class="text-5xl font-extrabold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-        Welcome back, {{ request.user.username }} 🚀
+Welcome back,
+{{ request.user.get_full_name|default:request.user.email }} 🚀
       </h1>
 
       <p class="text-white/60 mt-4 text-lg">

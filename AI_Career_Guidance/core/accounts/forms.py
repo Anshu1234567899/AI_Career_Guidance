@@ -7,7 +7,7 @@ from .models import Skill
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'is_active', 'is_staff']
+        fields = ['first_name','last_name', 'email', 'is_active', 'is_staff']
 
 
 class CareerForm(forms.ModelForm):

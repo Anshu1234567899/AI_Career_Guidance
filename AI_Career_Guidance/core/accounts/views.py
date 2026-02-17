@@ -62,10 +62,10 @@ def home(request):
 
 def login_view(request):
     if request.method == "POST":
-        username = request.POST['username']
+        email = request.POST['email']
         password = request.POST['password']
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=email, password=password)
 
         if user:
             login(request, user)
@@ -79,29 +79,35 @@ def login_view(request):
 
 def register_view(request):
     if request.method == "POST":
-        username = request.POST.get('username')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        if not username or not email or not password:
+        if not first_name or not last_name or not email or not password:
             return render(request, 'accounts/register.html', {
                 'error': 'All fields are required'
             })
 
-        if User.objects.filter(username=username).exists():
+        if User.objects.filter(username=email).exists():
             return render(request, 'accounts/register.html', {
-                'error': 'Username already exists'
+                'error': 'Email already exists'
             })
 
         user = User.objects.create_user(
-            username=username,
+            username=email,
             email=email,
-            password=password
+            password=password,
+            first_name=first_name,
+            last_name=last_name
         )
+
         user.save()
         return redirect('login')
 
     return render(request, 'accounts/register.html')
+
+
 
 @login_required
 def edit_profile(request):

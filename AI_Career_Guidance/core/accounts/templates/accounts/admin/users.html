@@ -38,8 +38,9 @@
                 <th class="p-3">
                     <input type="checkbox" id="select-all">
                 </th>
-                <th class="p-3 text-left">Username</th>
                 <th class="p-3 text-left">Email</th>
+                <th class="p-3 text-left">First Name</th>
+                <th class="p-3 text-left">Last Name</th>
                 <th class="p-3 text-left">Active</th>
                 <th class="p-3 text-left">Actions</th>
             </tr>
@@ -50,9 +51,11 @@
                 <td class="p-3">
                     <input type="checkbox" name="user_ids" value="{{ user.id }}" class="select-user">
                 </td>
-                <td class="p-3">{{ user.username }}</td>
                 <td class="p-3">{{ user.email }}</td>
+                <td class="p-3">{{ user.first_name|default:"-" }}</td>
+                <td class="p-3">{{ user.last_name|default:"-" }}</td>
                 <td class="p-3">{{ user.is_active|yesno:"Yes,No" }}</td>
+
                 <td class="p-3 space-x-2">
                     <a href="{% url 'admin_user_edit' user.id %}" class="px-3 py-1 bg-cyan-400 hover:bg-cyan-500 text-black rounded-lg font-semibold">Edit</a>
                     <form action="{% url 'admin_user_delete' user.id %}" method="POST" class="inline">
