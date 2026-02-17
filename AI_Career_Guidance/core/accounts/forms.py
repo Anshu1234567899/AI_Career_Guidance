@@ -2,6 +2,8 @@ from django import forms
 from .models import Career
 from django.contrib.auth.models import User
 from .models import Skill
+from .models import Category
+
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -47,3 +49,12 @@ class ContactForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea(attrs={
         'placeholder': 'Your Message', 'class': 'form-input'
     }))
+
+class CategoryForm(forms.ModelForm):
+        class Meta:
+            model = Category
+            fields = ['name', 'description']
+            widgets = {
+                'name': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
+                'description': forms.Textarea(attrs={'class': 'border rounded px-3 py-2 w-full', 'rows': 3}),
+            }

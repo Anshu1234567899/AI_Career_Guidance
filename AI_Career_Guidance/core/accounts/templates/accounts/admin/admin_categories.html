@@ -1,0 +1,76 @@
+{% extends "accounts/admin/base_admin.html" %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <!-- Header -->
+<div class="flex flex-col md:flex-row items-center justify-between mb-6">
+  <h2 class="text-3xl font-bold text-gray-100 mb-4 md:mb-0">Categories</h2>
+</div>
+
+<!-- Add Category Card -->
+<div class="bg-gray-800 shadow-2xl rounded-2xl p-6 border border-gray-700">
+  <h3 class="text-2xl font-semibold text-cyan-400 mb-4">Add New Category</h3>
+
+  <form method="POST" class="space-y-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <!-- Quick fix for input visibility -->
+    <style>
+      form input, form textarea, form select {
+        background-color: #1f2937; /* Tailwind bg-gray-800 slightly darker */
+        color: white;              /* Text visible */
+        padding: 0.5rem 1rem;      /* Tailwind px-4 py-2 */
+        border-radius: 0.75rem;    /* Tailwind rounded-lg */
+        outline: none;
+        border: 1px solid #374151; /* Tailwind border-gray-700 */
+      }
+      form input::placeholder,
+      form textarea::placeholder {
+        color: #d1d5db; /* Tailwind gray-300 */
+      }
+    </style>
+
+    <button type="submit"
+            class="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition transform">
+      Add Category
+    </button>
+  </form>
+</div>
+
+
+  <!-- Categories Table -->
+  <div class="overflow-x-auto bg-gray-800 shadow-2xl rounded-2xl border border-gray-700">
+   <table class="table-auto w-full border border-gray-700 rounded-lg overflow-hidden">
+    <thead class="bg-gray-700 text-gray-100">
+        <tr>
+            <th class="px-4 py-2">#</th>
+            <th class="px-4 py-2">Name</th>
+            <th class="px-4 py-2">Description</th>
+            <th class="px-4 py-2">Actions</th>
+        </tr>
+    </thead>
+    <tbody class="bg-gray-800 text-gray-200">
+        {% for cat in categories %}
+        <tr class="hover:bg-gray-700 transition">
+            <td class="px-4 py-2 text-center">{{ forloop.counter }}</td> <!-- 🔥 consecutive number -->
+            <td class="px-4 py-2">{{ cat.name }}</td>
+            <td class="px-4 py-2">{{ cat.description }}</td>
+            <td class="px-4 py-2 text-center">
+                <a href="{% url 'edit_category' cat.id %}" class="text-yellow-400 hover:underline mr-2">Edit</a>
+                <a href="{% url 'delete_category' cat.id %}" class="text-red-500 hover:underline">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center py-4 text-gray-400">No categories found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+  </div>
+
+</div>
+{% endblock %}

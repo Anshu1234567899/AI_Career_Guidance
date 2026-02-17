@@ -1,0 +1,31 @@
+{% extends "accounts/admin/base_admin.html" %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row items-center justify-between mb-6">
+    <h2 class="text-3xl font-bold text-gray-100 mb-4 md:mb-0">
+      Delete Category: {{ category.name }}?
+    </h2>
+  </div>
+
+  <!-- Delete Confirmation Card -->
+  <div class="bg-gray-800 shadow-2xl rounded-2xl p-6 border border-gray-700 max-w-3xl mx-auto">
+    <p class="text-gray-200 mb-6">Are you sure you want to permanently delete this category? This action cannot be undone.</p>
+
+    <form method="POST" class="flex flex-col md:flex-row gap-4">
+      {% csrf_token %}
+      <button type="submit"
+              class="w-full md:w-auto bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:scale-105 transition transform">
+        Yes, Delete
+      </button>
+      <a href="{% url 'admin_categories' %}"
+         class="w-full md:w-auto text-gray-900 bg-gray-300 font-semibold py-3 px-6 rounded-xl shadow hover:bg-gray-400 transition">
+        Cancel
+      </a>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

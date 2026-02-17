@@ -22,6 +22,9 @@ from django.http import HttpResponse
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from .models import Category
+from .forms import CategoryForm
+
 
 @never_cache
 @login_required
@@ -194,12 +197,14 @@ def admin_dashboard(request):
     total_users = User.objects.count()
     total_careers = Career.objects.count()
     total_skills = Skill.objects.count()
+    total_categories = Category.objects.count()
     total_quiz_questions = CareerQuizQuestion.objects.count()
 
     context = {
         'total_users': total_users,
         'total_careers': total_careers,
         'total_skills': total_skills,
+        'total_categories': total_categories,
         "total_quiz_questions": total_quiz_questions,
     }
 
@@ -613,3 +618,40 @@ def skill_based_careers(request):
 #         )
 #         return HttpResponse("Superuser created successfully!")
 #     return HttpResponse("Superuser already exists.")
+
+@login_required
+def admin_categories(request):
+    categories = Category.objects.all().order_by('id')
+    form = CategoryForm()
+
+    if request.method == "POST":
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_categories')  # redirect to same page
+
+    context = {'categories': categories, 'form': form}
+    return render(request, 'accounts/admin/admin_categories.html', context)
+
+
+@login_required
+def edit_category(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    form = CategoryForm(instance=category)
+
+    if request.method == "POST":
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_categories')
+
+    return render(request, 'accounts/admin/edit_category.html', {'form': form, 'category': category})
+
+
+@login_required
+def delete_category(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == "POST":
+        category.delete()
+        return redirect('admin_categories')
+    return render(request, 'accounts/admin/delete_category.html', {'category': category})

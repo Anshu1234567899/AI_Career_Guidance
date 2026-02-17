@@ -200,64 +200,74 @@ html {
 
 <!-- NAVBAR -->
 <nav class="glass-nav shadow-2xl sticky top-0 z-50">
-<div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
 
     <!-- LOGO -->
-<h1 class="text-xl md:text-2xl font-extrabold tracking-wide text-white flex items-center gap-2 text-center">
+    <h1 class="text-xl md:text-2xl font-extrabold tracking-wide text-white flex items-center gap-2">
       🤖 <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-300">
         AI Career Guidance
       </span>
     </h1>
 
-    <!-- NAV LINKS -->
-<div class="flex flex-wrap gap-4 md:gap-8 items-center text-white font-medium justify-end">
-
+    <!-- DESKTOP LINKS -->
+    <div class="hidden md:flex gap-6 items-center text-white font-medium">
       <a href="/" class="float-link hover:text-yellow-300">Home</a>
       <a href="{% url 'contact' %}" class="float-link hover:text-yellow-300">Contact</a>
 
       {% if user.is_authenticated %}
-
-        <a href="{% url 'dashboard' %}" class="float-link hover:text-yellow-300">
-          Dashboard
-        </a>
+        <a href="{% url 'dashboard' %}" class="float-link hover:text-yellow-300">Dashboard</a>
 
         {% if user.is_staff %}
-          <a href="{% url 'admin_dashboard' %}"
-             class="px-4 py-2 rounded-xl font-semibold
-                    bg-gradient-to-r from-yellow-400 to-orange-400
-                    text-black shadow-lg hover:scale-105 transition">
+          <a href="{% url 'admin_dashboard' %}" class="px-4 py-2 rounded-xl font-semibold
+             bg-gradient-to-r from-yellow-400 to-orange-400 text-black shadow-lg hover:scale-105 transition">
             Admin Panel
           </a>
         {% endif %}
 
-        <!-- LOGOUT -->
         <form method="POST" action="{% url 'logout' %}">
           {% csrf_token %}
-          <button type="submit"
-                  class="px-4 py-2 rounded-xl font-semibold
-                         bg-red-500 hover:bg-red-600
-                         shadow-lg transition">
+          <button type="submit" class="px-4 py-2 rounded-xl font-semibold bg-red-500 hover:bg-red-600 shadow-lg transition">
             Logout
           </button>
         </form>
 
       {% else %}
-
-        <a href="{% url 'login' %}"
-           class="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 transition">
-          Login
-        </a>
-
-        <a href="{% url 'register' %}"
-           class="px-4 py-2 rounded-xl
-                  bg-gradient-to-r from-green-400 to-emerald-500
-                  text-black font-semibold shadow-lg hover:scale-105 transition">
-          Register
-        </a>
-
+        <a href="{% url 'login' %}" class="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 transition">Login</a>
+        <a href="{% url 'register' %}" class="px-4 py-2 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 text-black font-semibold shadow-lg hover:scale-105 transition">Register</a>
       {% endif %}
-
     </div>
+
+    <!-- MOBILE HAMBURGER -->
+    <div class="md:hidden relative">
+      <button id="mobile-menu-btn" class="text-white focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+
+      <!-- MOBILE DROPDOWN MENU -->
+      <div id="mobile-menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg flex-col text-white p-4 space-y-2 z-50">
+        <a href="/" class="hover:text-yellow-300 block">Home</a>
+        <a href="{% url 'contact' %}" class="hover:text-yellow-300 block">Contact</a>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" class="hover:text-yellow-300 block">Dashboard</a>
+
+          {% if user.is_staff %}
+            <a href="{% url 'admin_dashboard' %}" class="hover:text-yellow-300 block">Admin Panel</a>
+          {% endif %}
+
+          <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="w-full text-left hover:text-red-500">Logout</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="hover:text-yellow-300 block">Login</a>
+          <a href="{% url 'register' %}" class="hover:text-yellow-300 block">Register</a>
+        {% endif %}
+      </div>
+    </div>
+
   </div>
 </nav>
 
@@ -302,6 +312,15 @@ html {
 
 
 <script>
+
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  menuBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+
+
 function toggleChatbot() {
     const box = document.getElementById('ai-chatbot-box');
     box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
