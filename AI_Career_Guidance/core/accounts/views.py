@@ -31,7 +31,8 @@ import io
 @never_cache
 @login_required
 def dashboard(request):
-    profile = StudentProfile.objects.get(user=request.user)
+    # Get or create profile
+    profile, created = StudentProfile.objects.get_or_create(user=request.user)
 
     career_scores = recommend_career(profile)
     top_career = career_scores[0][0] if career_scores and career_scores[0][0] else None
@@ -60,6 +61,7 @@ def dashboard(request):
         "all_careers": career_scores,
         "completion": completion
     })
+
 
 @login_required
 def edit_account(request):
@@ -876,3 +878,4 @@ def admin_quiz_result_delete(request, id):
     result = get_object_or_404(CareerQuizResult, id=id)
     result.delete()
     return redirect('admin_quiz_results')
+
