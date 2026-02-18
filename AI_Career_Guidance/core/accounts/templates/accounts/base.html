@@ -276,6 +276,29 @@ html {
   {% block content %}{% endblock %}
 </main>
 
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  if (menuBtn && mobileMenu) {
+
+    // Toggle menu on hamburger click
+    menuBtn.addEventListener('click', function (event) {
+      event.stopPropagation();  // important
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', function (event) {
+      if (!mobileMenu.contains(event.target) && !menuBtn.contains(event.target)) {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+
+  }
+</script>
+
+
 {% if user.is_authenticated %}
 
 <!-- Floating AI Chatbot Button -->
@@ -312,14 +335,6 @@ html {
 
 
 <script>
-
-  const menuBtn = document.getElementById('mobile-menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
-
-  menuBtn.addEventListener('click', () => {
-    mobileMenu.classList.toggle('hidden');
-  });
-
 
 function toggleChatbot() {
     const box = document.getElementById('ai-chatbot-box');
