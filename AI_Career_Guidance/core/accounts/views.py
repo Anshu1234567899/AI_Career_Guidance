@@ -7,7 +7,6 @@ from .models import Skill, StudentProfile
 from django.shortcuts import get_object_or_404
 from .models import Career
 from django.views.decorators.cache import never_cache
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from .forms import UserUpdateForm, CareerForm ,ContactForm
 from django.conf import settings
@@ -16,20 +15,23 @@ from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_POST
-from django.core.mail import send_mail
 from .models import CareerQuizQuestion, CareerQuizOption, CareerQuizResult ,Category
 from django.http import HttpResponse
-import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from .models import Category
 from .forms import CategoryForm
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
+import io
 
 
 @never_cache
 @login_required
 def dashboard(request):
-    profile, created = StudentProfile.objects.get_or_create(user=request.user)
+    profile = StudentProfile.objects.get(user=request.user)
 
     career_scores = recommend_career(profile)
     top_career = career_scores[0][0] if career_scores and career_scores[0][0] else None
@@ -58,6 +60,37 @@ def dashboard(request):
         "all_careers": career_scores,
         "completion": completion
     })
+
+@login_required
+def edit_account(request):
+    user = request.user
+    profile = StudentProfile.objects.get(user=user)
+
+    if request.method == "POST":
+        user.first_name = request.POST.get("first_name", "")
+        user.last_name = request.POST.get("last_name", "")
+        user.email = request.POST.get("email", "")
+
+        # 🗑 Delete photo (FIXED)
+        if "remove_photo" in request.POST:
+            if profile.profile_picture:
+                profile.profile_picture.delete(save=False)
+            profile.profile_picture = None
+
+        # 📤 Upload new photo
+        if request.FILES.get("profile_picture"):
+            profile.profile_picture = request.FILES["profile_picture"]
+
+        user.save()
+        profile.save()
+
+        return redirect("dashboard")
+
+    return render(request, "accounts/edit_account.html", {
+        "user": user,
+        "profile": profile
+    })
+
 
 
 def home(request):
@@ -114,7 +147,7 @@ def register_view(request):
 
 @login_required
 def edit_profile(request):
-    profile, created = StudentProfile.objects.get_or_create(user=request.user)
+    profile = StudentProfile.objects.get(user=request.user)
     skills = Skill.objects.all()
 
     if request.method == "POST":
@@ -199,6 +232,7 @@ def admin_dashboard(request):
     total_skills = Skill.objects.count()
     total_categories = Category.objects.count()
     total_quiz_questions = CareerQuizQuestion.objects.count()
+    total_quiz_results = CareerQuizResult.objects.count()  # 👈 ADD THIS
 
     context = {
         'total_users': total_users,
@@ -206,16 +240,10 @@ def admin_dashboard(request):
         'total_skills': total_skills,
         'total_categories': total_categories,
         "total_quiz_questions": total_quiz_questions,
+        "total_quiz_results": total_quiz_results,  # 👈 ADD
     }
 
-    # ✅ Template path correct
     return render(request, 'accounts/admin/dashboard.html', context)
-
-
-
-
-
-
 
 
 @staff_member_required
@@ -559,7 +587,29 @@ def admin_quiz_delete(request, id):
     question = get_object_or_404(CareerQuizQuestion, id=id)
     question.delete()
     return redirect('admin_quiz_list')
+@staff_member_required
+def admin_quiz_results(request):
+    results = CareerQuizResult.objects.select_related(
+        "user", "suggested_career"
+    ).order_by("-created_at")
 
+    careers = Career.objects.all()  # For dropdown
+
+    if request.method == "POST":
+        result_id = request.POST.get("result_id")
+        career_id = request.POST.get("career")
+        result = CareerQuizResult.objects.get(id=result_id)
+        if career_id:
+            result.suggested_career_id = career_id
+        else:
+            result.suggested_career = None
+        result.save()
+        return redirect("admin_quiz_results")  # reload page after save
+
+    return render(request, "accounts/admin/quiz_results.html", {
+        "results": results,
+        "careers": careers
+    })
 
 from django.db.models import Q
 
@@ -655,3 +705,174 @@ def delete_category(request, pk):
         category.delete()
         return redirect('admin_categories')
     return render(request, 'accounts/admin/delete_category.html', {'category': category})
+
+def download_career_pdf(request, pk):
+    career = Career.objects.get(pk=pk)
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+
+    styles = getSampleStyleSheet()
+    title = styles["Heading1"]
+    normal = styles["BodyText"]
+
+    elements.append(Paragraph(f"{career.name} Career Guide", title))
+    elements.append(Spacer(1, 0.4 * inch))
+
+    elements.append(Paragraph(f"<b>Description:</b> {career.description}", normal))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    elements.append(Paragraph(f"<b>Average Salary:</b> {career.average_salary or 'Not specified'}", normal))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    elements.append(Paragraph(f"<b>Future Scope:</b> {career.future_scope or 'Coming soon'}", normal))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    elements.append(Paragraph("<b>Recommended Courses:</b>", normal))
+    elements.append(Paragraph(career.recommended_courses or "", normal))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    elements.append(Paragraph("<b>Career Roadmap:</b>", normal))
+    elements.append(Paragraph(career.roadmap or "", normal))
+
+    doc.build(elements)
+
+    buffer.seek(0)
+    return HttpResponse(
+        buffer,
+        content_type='application/pdf',
+        headers={'Content-Disposition': f'attachment; filename="{career.name}_guide.pdf"'},
+    )
+
+
+
+
+def calculate_dynamic_career(result, profile):
+    """
+    Returns dynamic career suggestion based on quiz result and student profile.
+
+    :param result: CareerQuizResult instance
+    :param profile: StudentProfile instance
+    :return: (career_object, description, final_category, final_score, category_scores)
+    """
+
+    category_scores = {}
+    final_score = result.total_score
+    final_category = None
+
+    # Adjust this according to your actual model
+    if hasattr(result, 'answers'):
+        for answer in result.answers.all():
+            cat = getattr(answer, 'category', None)
+            score = getattr(answer, 'score', 0)
+            if cat:
+                category_scores[cat] = category_scores.get(cat, 0) + score
+
+    # Determine highest scoring category
+    if category_scores:
+        final_category = max(category_scores, key=category_scores.get)
+
+    # Map final category or total score to a Career
+    career = None
+    description = "No description available."
+
+    if final_category:
+        career = Career.objects.filter(category=final_category).first()
+    else:
+        # fallback based on total score
+        if final_score >= 12:
+            career = Career.objects.filter(name="Data Scientist").first()
+        elif final_score >= 8:
+            career = Career.objects.filter(name="Web Developer").first()
+        else:
+            career = Career.objects.filter(name="Designer").first()
+
+    if career:
+        description = career.description or "No description available."
+
+    return career, description, final_category, final_score, category_scores
+
+
+@login_required
+def download_personalized_report(request):
+    """
+    Generates a PDF report for the logged-in user's last career quiz attempt.
+    Always uses dynamic calculation to match display page.
+    """
+    # Get last quiz attempt
+    result = CareerQuizResult.objects.filter(user=request.user).last()
+    if not result:
+        return HttpResponse("No valid quiz result found. Please retake the quiz.")
+
+    # Get student profile
+    try:
+        profile = StudentProfile.objects.get(user=request.user)
+    except StudentProfile.DoesNotExist:
+        return HttpResponse("Student profile not found.")
+
+    # Always calculate dynamically
+    career, description, final_category, final_score, scores = calculate_dynamic_career(result, profile)
+
+    # If still no career found, fallback to suggested_career
+    if not career and result.suggested_career:
+        career = result.suggested_career
+        description = career.description or "No description available."
+
+    # If still no career, abort
+    if not career:
+        return HttpResponse("No career suggestion available.")
+
+    # Generate PDF
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+
+    styles = getSampleStyleSheet()
+    title_style = styles["Heading1"]
+    normal_style = styles["BodyText"]
+
+    elements.append(Paragraph(f"{career.name} Career Guide", title_style))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    elements.append(Paragraph(f"<b>Description:</b> {description}", normal_style))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    elements.append(Paragraph(f"<b>Average Salary:</b> {career.average_salary or 'Not specified'}", normal_style))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    elements.append(Paragraph(f"<b>Future Scope:</b> {career.future_scope or 'Coming soon'}", normal_style))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    elements.append(Paragraph(f"<b>Recommended Courses:</b>", normal_style))
+    elements.append(Paragraph(career.recommended_courses or "N/A", normal_style))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    elements.append(Paragraph(f"<b>Career Roadmap:</b>", normal_style))
+    elements.append(Paragraph(career.roadmap or "N/A", normal_style))
+
+    doc.build(elements)
+    buffer.seek(0)
+
+    return HttpResponse(
+        buffer,
+        content_type="application/pdf",
+        headers={'Content-Disposition': f'attachment; filename="{career.name}_personal_report.pdf"'},
+    )
+
+def edit_quiz_question(request, id):
+    question = CareerQuizQuestion.objects.get(id=id)
+    options = CareerQuizOption.objects.filter(question=question)
+    categories = Category.objects.all()   # 👈 ADD THIS
+
+    return render(request, "accounts/admin/quiz_edit.html", {
+        "question": question,
+        "options": options,
+        "categories": categories,   # 👈 PASS THIS
+    })
+
+@login_required
+def admin_quiz_result_delete(request, id):
+    result = get_object_or_404(CareerQuizResult, id=id)
+    result.delete()
+    return redirect('admin_quiz_results')

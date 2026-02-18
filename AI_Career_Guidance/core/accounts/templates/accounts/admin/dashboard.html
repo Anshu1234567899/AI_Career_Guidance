@@ -19,6 +19,7 @@
         <h2 class="text-xl font-semibold text-white">Skills</h2>
         <p class="text-cyan-400 text-3xl font-bold">{{ total_skills }}</p>
     </div>
+
     <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
         <h2 class="text-xl font-semibold text-white">Categories</h2>
         <p class="text-cyan-400 text-3xl font-bold">{{ total_categories }}</p>
@@ -27,9 +28,12 @@
     <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
         <h2 class="text-xl font-semibold text-white">Quiz Questions</h2>
         <p class="text-cyan-400 text-3xl font-bold">{{ total_quiz_questions }}</p>
-        {% comment %} <a href="{% url 'admin_quiz_list' %}" class="text-sm text-gray-300 hover:text-white block mt-2">
-    Manage Quiz
-</a> {% endcomment %}
+    </div>
+
+    <!-- ✅ NEW CARD -->
+    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
+        <h2 class="text-xl font-semibold text-white">Quiz Results</h2>
+        <p class="text-cyan-400 text-3xl font-bold">{{ total_quiz_results }}</p>
     </div>
 </div>
 
@@ -45,21 +49,32 @@ const ctx = document.getElementById('dashboardChart').getContext('2d');
 const dashboardChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: ['Users', 'Careers', 'Skills','Categories', 'Quiz Questions'], // 🔥 Quiz added
+        labels: ['Users', 'Careers', 'Skills','Categories', 'Quiz Questions', 'Quiz Results'],
         datasets: [{
             label: 'Total Count',
-            data: [{{ total_users }}, {{ total_careers }}, {{ total_skills }}, {{ total_categories }}, {{ total_quiz_questions }}],
+            data: [
+                {{ total_users }},
+                {{ total_careers }},
+                {{ total_skills }},
+                {{ total_categories }},
+                {{ total_quiz_questions }},
+                {{ total_quiz_results }}
+            ],
             backgroundColor: [
                 'rgba(14, 116, 144, 0.8)',
                 'rgba(34, 197, 94, 0.8)',
                 'rgba(234, 88, 12, 0.8)',
-                'rgba(168, 85, 247, 0.8)' // 🔥 Quiz color
+                'rgba(168, 85, 247, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(59, 130, 246, 0.8)'
             ],
             borderColor: [
                 'rgba(14, 116, 144, 1)',
                 'rgba(34, 197, 94, 1)',
                 'rgba(234, 88, 12, 1)',
-                'rgba(168, 85, 247, 1)' // 🔥 Quiz border
+                'rgba(168, 85, 247, 1)',
+                'rgba(239, 68, 68, 1)',
+                'rgba(59, 130, 246, 1)'
             ],
             borderWidth: 1
         }]
@@ -68,7 +83,15 @@ const dashboardChart = new Chart(ctx, {
         scales: {
             y: {
                 beginAtZero: true,
-                precision: 0
+                precision: 0,
+                ticks: {
+                    color: 'white'
+                }
+            },
+            x: {
+                ticks: {
+                    color: 'white'
+                }
             }
         },
         responsive: true,

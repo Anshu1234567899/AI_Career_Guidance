@@ -1,104 +1,154 @@
 {% extends 'accounts/base.html' %}
 {% block content %}
 
-<div class="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#1c2b35] to-[#2c5364] text-white px-6 py-16">
+<div class="relative min-h-screen bg-gradient-to-br from-[#0b1d26] via-[#132a33] to-[#1c3c47] text-white overflow-hidden px-6 py-20">
 
-  <div class="max-w-5xl mx-auto">
+  <!-- Background Glow -->
+  <div class="absolute w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-3xl -top-40 -left-40 animate-pulse"></div>
+  <div class="absolute w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-3xl -bottom-40 -right-40 animate-pulse"></div>
 
-    <!-- HERO SECTION -->
-    <div class="text-center mb-16">
+  <div class="relative z-10 max-w-6xl mx-auto">
+
+    <!-- ================= HERO ================= -->
+    <div class="text-center mb-20">
 
       {% if career.category %}
-        <span class="inline-block bg-cyan-500/20 text-cyan-300 px-4 py-1 rounded-full text-sm mb-4">
-          {{ career.category.name }}
-        </span>
+      <span class="inline-block bg-cyan-500/20 text-cyan-300 px-5 py-1 rounded-full text-sm tracking-wide mb-6 border border-cyan-400/30">
+        {{ career.category.name }}
+      </span>
       {% endif %}
 
-      <h1 class="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+      <h1 class="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-xl">
         {{ career.name }}
       </h1>
 
-      <p class="mt-6 text-lg text-white/70 max-w-3xl mx-auto leading-relaxed">
-        {{ career.description }}
+      <p class="mt-8 text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+        {{ career.description|default:"One of the most in-demand and future-proof career paths in today’s AI-driven world." }}
       </p>
 
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row justify-center gap-6 mt-10">
+        <a href="{% url 'career_quiz' %}"
+           class="px-8 py-3 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 font-semibold shadow-lg hover:scale-105 transition duration-300">
+          🎯 Check Your Match
+        </a>
+
+        <a href="#roadmap"
+           class="px-8 py-3 rounded-2xl border border-white/30 hover:bg-white/10 transition duration-300">
+          🛣 View Roadmap
+        </a>
+      </div>
+
       {% if career.image %}
-      <div class="mt-10 flex justify-center">
+      <div class="mt-16 flex justify-center">
         <img src="{{ career.image.url }}"
-             class="w-full max-w-3xl h-72 object-cover rounded-3xl border border-white/20 shadow-2xl hover:scale-[1.02] transition duration-500">
+             class="w-full max-w-4xl h-80 object-cover rounded-3xl border border-white/20 shadow-[0_0_40px_rgba(0,255,255,0.25)] hover:scale-[1.02] transition duration-700">
       </div>
       {% endif %}
 
     </div>
 
 
-    <!-- INFO GRID -->
-    <div class="grid md:grid-cols-2 gap-8">
+    <!-- ================= STATS GRID ================= -->
+    <div class="grid md:grid-cols-2 gap-10">
 
-      <!-- Salary Card -->
-      <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 shadow-xl hover:shadow-green-400/20 transition duration-300">
-        <h3 class="text-xl font-bold mb-4 text-green-400">💰 Average Salary</h3>
-        <p class="text-4xl font-extrabold">
-          {{ career.average_salary|default:"Not specified" }}
-        </p>
-      </div>
+      <!-- Salary -->
+      <div class="group bg-white/10 backdrop-blur-3xl border border-white/20 rounded-3xl p-10 shadow-2xl hover:scale-[1.03] hover:shadow-green-500/40 transition duration-500">
 
-      <!-- Future Scope Card -->
-      <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 shadow-xl hover:shadow-cyan-400/20 transition duration-300">
-        <h3 class="text-xl font-bold mb-4 text-cyan-300">🚀 Future Scope</h3>
-        <p class="text-white/80 leading-relaxed">
-          {{ career.future_scope|default:"Future scope information coming soon." }}
-        </p>
-      </div>
-
-    </div>
-
-
-    <!-- COURSES -->
-    {% if career.recommended_courses %}
-    <div class="mt-14 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 shadow-xl">
-      <h3 class="text-2xl font-bold mb-6 text-purple-300">🎓 Recommended Courses</h3>
-      <div class="text-white/80 space-y-3 leading-relaxed">
-        {{ career.recommended_courses|safe }}
-      </div>
-    </div>
-    {% endif %}
-
-
-    <!-- ROADMAP -->
-    {% if career.roadmap %}
-    <div class="mt-12 bg-white/15 backdrop-blur-xl border border-white/20 rounded-3xl p-10 shadow-xl">
-      <h3 class="text-2xl font-bold mb-6 text-pink-300">🛣 Career Roadmap</h3>
-      <div class="text-white/85 space-y-3 leading-relaxed">
-        {{ career.roadmap|safe }}
-      </div>
-    </div>
-    {% endif %}
-
-
-    <!-- CTA SECTION -->
-    <div class="mt-20 text-center">
-
-      <div class="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 backdrop-blur-xl border border-white/20 rounded-3xl p-10 shadow-xl">
-
-        <h3 class="text-2xl font-bold mb-4">
-          Ready to explore your career path?
+        <h3 class="text-xl font-semibold text-green-400 mb-6 flex items-center gap-2">
+          💰 Average Salary
         </h3>
 
-        <p class="text-white/70 mb-8">
-          Continue your journey with personalized AI recommendations.
+        <p class="text-5xl font-extrabold text-green-400 drop-shadow-[0_0_20px_rgba(34,197,94,0.6)]">
+          {{ career.average_salary|default:"Competitive & High Growth" }}
         </p>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-6">
+        <p class="text-white/60 mt-4 text-sm">
+          Salary varies based on experience, location, and expertise level.
+        </p>
+
+      </div>
+
+      <!-- Future Scope -->
+      <div class="group bg-white/10 backdrop-blur-3xl border border-white/20 rounded-3xl p-10 shadow-2xl hover:scale-[1.03] hover:shadow-cyan-500/40 transition duration-500">
+
+        <h3 class="text-xl font-semibold text-cyan-300 mb-6 flex items-center gap-2">
+          🚀 Future Scope
+        </h3>
+
+        <p class="text-white/80 leading-relaxed text-lg">
+          {{ career.future_scope|default:"Strong demand in AI, machine learning, analytics, startups, and global tech enterprises." }}
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= COURSES ================= -->
+    <div class="mt-20 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-3xl p-12 shadow-2xl hover:shadow-purple-500/30 transition duration-500">
+
+      <h3 class="text-3xl font-bold mb-10 text-purple-300">
+        🎓 Recommended Courses
+      </h3>
+
+      {% if career.recommended_courses %}
+        <div class="text-white/80 leading-relaxed space-y-4 text-lg">
+          {{ career.recommended_courses|safe }}
+        </div>
+      {% else %}
+        <p class="text-white/60 italic">
+          Curated courses will be added soon to help you master this career path 🚀
+        </p>
+      {% endif %}
+
+    </div>
+
+
+    <!-- ================= ROADMAP ================= -->
+    <div id="roadmap" class="mt-16 bg-white/15 backdrop-blur-3xl border border-white/20 rounded-3xl p-12 shadow-2xl hover:shadow-pink-500/30 transition duration-500">
+
+      <h3 class="text-3xl font-bold mb-10 text-pink-300">
+        🛣 Career Roadmap
+      </h3>
+
+      {% if career.roadmap %}
+        <div class="text-white/85 leading-relaxed space-y-4 text-lg">
+          {{ career.roadmap|safe }}
+        </div>
+      {% else %}
+        <p class="text-white/60 italic">
+          A structured roadmap will be available soon to guide your journey step-by-step.
+        </p>
+      {% endif %}
+
+    </div>
+
+
+    <!-- ================= FINAL CTA ================= -->
+    <div class="mt-24 text-center">
+
+      <div class="bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-3xl border border-white/20 rounded-3xl p-12 shadow-2xl">
+
+        <h3 class="text-3xl font-bold mb-6">
+          Ready to start your journey?
+        </h3>
+
+        <p class="text-white/70 mb-10 text-lg">
+          Unlock AI-powered recommendations and accelerate your career growth.
+        </p>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-8">
+
+          <a href="{% url 'download_career_pdf' career.id %}"
+   class="px-8 py-4 rounded-2xl bg-green-500 hover:bg-green-600 font-bold transition shadow-xl">
+   📄 Download Career Guide
+</a>
+
 
           <a href="{% url 'dashboard' %}"
-             class="px-10 py-4 rounded-2xl bg-cyan-400 text-gray-900 font-bold hover:bg-cyan-300 transition shadow-xl">
+             class="px-10 py-4 rounded-2xl bg-cyan-400 text-gray-900 font-bold hover:bg-cyan-300 transition shadow-xl hover:scale-105">
             ⬅ Back to Dashboard
-          </a>
-
-          <a href="{% url 'career_quiz' %}"
-             class="px-10 py-4 rounded-2xl bg-purple-500 hover:bg-purple-600 font-bold transition shadow-xl">
-            🧪 Take Career Quiz
           </a>
 
         </div>

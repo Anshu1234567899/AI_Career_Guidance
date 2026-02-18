@@ -13,17 +13,46 @@
             <input type="text" name="question" class="w-full p-2 rounded bg-gray-700" value="{{ question.question }}" required>
         </div>
 
-        <!-- Options Loop -->
         {% for opt in options %}
-        <div class="mb-2">
-            <label class="block mb-1">Option {{ forloop.counter }}</label>
-            <input type="text" name="option{{ forloop.counter }}_text" value="{{ opt.option_text }}" class="w-full p-2 rounded bg-gray-700" required>
-            <input type="number" name="option{{ forloop.counter }}_score" value="{{ opt.score }}" class="w-full p-2 rounded bg-gray-700 mt-1" required>
-        </div>
+<div class="mb-4 p-3 bg-gray-700 rounded">
+
+    <label class="block mb-1 font-semibold">
+        Option {{ forloop.counter }}
+    </label>
+
+    <!-- Option Text -->
+    <input type="text"
+           name="option{{ forloop.counter }}_text"
+           value="{{ opt.option_text }}"
+           class="w-full p-2 rounded bg-gray-800"
+           required>
+
+    <!-- Weight -->
+    <input type="number"
+           name="option{{ forloop.counter }}_weight"
+           value="{{ opt.weight }}"
+           class="w-full p-2 rounded bg-gray-800 mt-2"
+           required>
+
+    <!-- ✅ Category Dropdown -->
+    <select name="option{{ forloop.counter }}_category"
+            class="w-full p-2 rounded bg-gray-800 mt-2"
+            required>
+        <option value="">Select Category</option>
+
+        {% for cat in categories %}
+            <option value="{{ cat.id }}"
+                {% if opt.category and opt.category.id == cat.id %}
+                    selected
+                {% endif %}
+            >
+                {{ cat.name }}
+            </option>
         {% endfor %}
 
-        <button type="submit" class="bg-cyan-500 px-6 py-2 rounded hover:bg-cyan-600">Save Changes</button>
-        <a href="{% url 'admin_quiz_list' %}" class="ml-4 bg-gray-600 px-4 py-2 rounded hover:bg-gray-700">Cancel</a>
-    </form>
+    </select>
+
 </div>
+{% endfor %}
+
 {% endblock %}

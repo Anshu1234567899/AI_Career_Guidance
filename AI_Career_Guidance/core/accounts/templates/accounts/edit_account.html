@@ -1,0 +1,146 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f2027] via-[#1c2b35] to-[#2c5364] p-6">
+
+  <div class="w-full max-w-2xl bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl p-8 md:p-10">
+
+    <!-- Heading -->
+    <div class="text-center mb-8">
+      <h2 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+        ✨ Edit Account
+      </h2>
+      <p class="text-white/60 mt-2 text-sm md:text-base">
+        Update your personal information
+      </p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+
+     <!-- Profile Image Preview -->
+<div class="flex flex-col items-center">
+
+  {% if profile.profile_picture %}
+        <img id="profilePreview"
+     src="{{ profile.profile_picture.url }}"
+     class="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-4 border-cyan-400 shadow-xl mb-4">
+
+
+    <!-- Delete Checkbox -->
+    <label class="flex items-center gap-2 text-red-400 text-sm mb-4 cursor-pointer">
+      <input type="checkbox" name="remove_photo" class="accent-red-500">
+      Remove current photo
+    </label>
+
+  {% else %}
+    <div class="w-28 h-28 md:w-32 md:h-32 rounded-full bg-white/10 flex items-center justify-center border border-white/20 mb-4">
+      <span class="text-white/50 text-sm">No Image</span>
+    </div>
+  {% endif %}
+
+  <!-- Upload Button -->
+  <label class="cursor-pointer bg-cyan-500/20 border border-cyan-400 text-cyan-300 px-4 py-2 rounded-xl text-sm hover:bg-cyan-500/30 transition">
+    Change Photo
+    <input type="file" name="profile_picture" class="hidden">
+  </label>
+
+</div>
+
+      <!-- First & Last Name -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div>
+          <label class="text-white/60 text-sm">First Name</label>
+          <input type="text"
+                 name="first_name"
+                 value="{{ user.first_name }}"
+                 class="w-full mt-2 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 transition">
+        </div>
+
+        <div>
+          <label class="text-white/60 text-sm">Last Name</label>
+          <input type="text"
+                 name="last_name"
+                 value="{{ user.last_name }}"
+                 class="w-full mt-2 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 transition">
+        </div>
+
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="text-white/60 text-sm">Email Address</label>
+        <input type="email"
+               name="email"
+               value="{{ user.email }}"
+               class="w-full mt-2 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 transition">
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex flex-col md:flex-row gap-4 pt-4">
+
+        <button type="submit"
+                class="w-full md:w-1/2 bg-gradient-to-r from-cyan-400 to-blue-500 py-3 rounded-xl font-semibold text-white shadow-lg hover:scale-105 transition duration-300">
+          💾 Save Changes
+        </button>
+
+        <a href="{% url 'dashboard' %}"
+           class="w-full md:w-1/2 text-center bg-white/10 border border-white/20 py-3 rounded-xl font-semibold text-white hover:bg-white/20 transition">
+          Cancel
+        </a>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const fileInput = document.querySelector('input[name="profile_picture"]');
+  const preview = document.getElementById("profilePreview");
+  const removeCheckbox = document.querySelector('input[name="remove_photo"]');
+
+  // Live preview for new image
+  if (fileInput) {
+    fileInput.addEventListener("change", function() {
+      const file = this.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        }
+
+        reader.readAsDataURL(file);
+
+        // If new image selected, uncheck remove
+        if (removeCheckbox) {
+          removeCheckbox.checked = false;
+        }
+      }
+    });
+  }
+
+  // Remove preview instantly
+  if (removeCheckbox) {
+    removeCheckbox.addEventListener("change", function() {
+      if (this.checked) {
+        preview.style.display = "none";
+      } else {
+        preview.style.display = "block";
+      }
+    });
+  }
+
+});
+</script>
+
+
+{% endblock %}
