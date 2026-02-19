@@ -25,6 +25,14 @@ class CareerForm(forms.ModelForm):
             'recommended_courses',
             'roadmap',
         ]
+        widgets = {
+            'required_skills': forms.SelectMultiple(attrs={
+                'size': '8',  # kitne items visible honge
+                'style': 'width:100%; padding:6px; border-radius:5px; background:#1c1c1c; color:#fff; border:1px solid #555;',
+            }),
+            'description': forms.Textarea(attrs={'rows': 4, 'style':'width:100%; padding:6px; border-radius:5px; background:#1c1c1c; color:#fff; border:1px solid #555;'}),
+        }
+
         
 
 class SkillForm(forms.ModelForm):
@@ -58,3 +66,4 @@ class CategoryForm(forms.ModelForm):
                 'name': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
                 'description': forms.Textarea(attrs={'class': 'border rounded px-3 py-2 w-full', 'rows': 3}),
             }
+

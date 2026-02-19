@@ -62,6 +62,11 @@ def dashboard(request):
         "completion": completion
     })
 
+def about_us(request):
+    """
+    Render the About Us page for AI Career Guidance.
+    """
+    return render(request, "accounts/about_us.html")
 
 @login_required
 def edit_account(request):
@@ -174,34 +179,33 @@ def edit_profile(request):
 
 
 def recommend_career(profile):
-    skill_names = [skill.name.lower() for skill in profile.skills.all()]
-    interest = profile.interest.lower() if profile.interest else ""
+    user_skills = [skill.name.lower() for skill in profile.skills.all()]
+    if not user_skills:
+        return [(None, 0)]
 
     career_scores = []
 
-    # Rule-based scoring
-    if "python" in skill_names or "machine learning" in skill_names:
-        career = Career.objects.filter(name__iexact="Data Scientist").first()
-        if career: career_scores.append((career, 80))  # 80% match
+    for career in Career.objects.all():
+        career_skills = [skill.name.lower() for skill in career.required_skills.all()]
 
-    if "javascript" in skill_names or "html" in skill_names:
-        career = Career.objects.filter(name__iexact="Web Developer").first()
-        if career: career_scores.append((career, 70))
+        if not career_skills:
+            continue  # Skip careers with no skills to avoid ZeroDivisionError
 
-    if "ai" in skill_names:
-        career = Career.objects.filter(name__iexact="AI/ML Engineer").first()
-        if career: career_scores.append((career, 85))
+        # Match calculation (safe)
+        matching_skills = [s for s in user_skills if any(s in c for c in career_skills)]
+        if not matching_skills:
+            continue  # Skip if no match
 
-    if "python" in skill_names:
-        career = Career.objects.filter(name__iexact="Software Developer").first()
-        if career: career_scores.append((career, 75))
+        score = (len(matching_skills) / len(career_skills)) * 100
+        career_scores.append((career, round(score, 2)))
 
     if not career_scores:
         return [(None, 0)]
 
-    # Sort by highest score
     career_scores.sort(key=lambda x: x[1], reverse=True)
     return career_scores
+
+
 
 
 
@@ -343,7 +347,6 @@ def admin_careers(request):
         'search': search
     })
 
-@staff_member_required
 @staff_member_required
 def admin_career_add(request):
     form = CareerForm(request.POST or None, request.FILES or None)
