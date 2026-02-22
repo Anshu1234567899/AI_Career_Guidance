@@ -1,189 +1,282 @@
 {% extends 'accounts/base.html' %}
 {% load static %}
-
 {% block content %}
 
-<!-- HERO SECTION WITH AUTO IMAGE SLIDER -->
-<section class="relative h-screen md:h-[85vh] overflow-hidden">
-<div class="absolute inset-0">
-  <div class="hero-slide absolute inset-0 bg-cover bg-center md:bg-bottom opacity-100 transition-opacity duration-1000"
-       style="background-image: url('{% static "images/pg.jpg" %}');"></div>
-
-  <div class="hero-slide absolute inset-0 bg-cover bg-center md:bg-bottom opacity-0 transition-opacity duration-1000"
-       style="background-image: url('{% static "images/cd.jpg" %}');"></div>
-
-  <div class="hero-slide absolute inset-0 bg-cover bg-center md:bg-center opacity-0 transition-opacity duration-1000"
-       style="background-image: url('{% static "images/cg.jpg" %}');"></div>
+<!-- Scroll Progress -->
+<div id="progressBar"
+     class="fixed top-0 left-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-[9999]">
 </div>
 
+<!-- ================= HERO SECTION ================= -->
+<section class="relative overflow-hidden bg-[#0f172a] text-white">
 
+  <!-- Animated Gradient Background -->
+  <div class="absolute inset-0 animated-gradient opacity-40"></div>
 
-  <!-- Dark Overlay -->
-<div class="absolute inset-0 bg-black/40"></div>
+  <!-- Blur Effects -->
+  <div class="blur-ball bg-purple-500 top-10 left-10"></div>
+  <div class="blur-ball bg-indigo-500 bottom-10 right-10"></div>
 
-  <!-- Hero Content -->
-<div class="relative z-10 flex items-center justify-center h-full text-center text-white px-4 sm:px-6">
-    <div>
-<h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
-        Smart Career Guidance System
-      </h1>
-<p class="text-base sm:text-lg md:text-xl mb-8 max-w-3xl mx-auto">
-        AI-powered platform that analyzes your skills and interests to recommend the best career path for your future.
-      </p>
+  <div class="relative max-w-7xl mx-auto px-6 py-20 md:py-28">
 
-      <!-- NEW 2 OPTIONS -->
-      <div class="flex flex-col md:flex-row gap-6 justify-center mb-10">
-        <a href="{% url 'skill_based' %}" 
-          class="w-full sm:w-auto bg-white text-blue-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-200 transition">
-           I Know My Interest → Explore Careers
-        </a>
-        <a href="{% url 'career_quiz' %}" 
-          class="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-500 transition">
-           I’m Confused → Take AI Career Quiz
-        </a>
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+
+      <!-- LEFT -->
+      <div class="reveal text-center md:text-left">
+
+        <span class="inline-block bg-white/10 px-4 py-1 rounded-full text-sm mb-6 backdrop-blur">
+          🚀 AI Powered Career Platform
+        </span>
+
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+          Discover Your Perfect
+          <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            Career Path
+          </span>
+        </h1>
+
+        <p class="text-gray-300 text-lg mb-8 max-w-xl mx-auto md:mx-0">
+          Smart AI system that analyzes your skills, interests,
+          and personality to suggest the best career roadmap.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+
+          <a href="{% url 'career_quiz' %}"
+             class="glow-btn text-center">
+            Take Career Assessment
+          </a>
+
+          <a href="{% url 'skill_based' %}"
+             class="glow-btn-secondary text-center">
+            Explore Careers
+          </a>
+
+        </div>
+
       </div>
 
-      {% if user.is_authenticated %}
-        <a href="{% url 'dashboard' %}"
-           class="bg-white text-blue-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-200 transition">
-           Go to Dashboard →
-        </a>
-      {% else %}
-        <a href="{% url 'login' %}?next={% url 'dashboard' %}"
-           class="bg-white text-blue-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-200 transition">
-           Get Started →
-        </a>
-      {% endif %}
+      <!-- RIGHT CARD -->
+      <div class="glass-card p-8 md:p-10">
+
+ <!-- Student Image -->
+<div class="mb-6">
+  <img src="{% static 'images/students.png' %}" 
+       alt="Happy Students"
+       class="w-full h-55 md:h-60 object-center object-cover rounded-2xl shadow-xl border border-white/10">
+</div>
+
+  <h3 class="text-2xl font-bold mb-6 text-center md:text-left">
+    Why Students Trust Us
+  </h3>
+
+  <ul class="space-y-4 text-gray-300 text-center md:text-left">
+    <li>✔ Personalized Career Suggestions</li>
+    <li>✔ AI Skill Analysis Engine</li>
+    <li>✔ Step-by-Step Roadmaps</li>
+    <li>✔ Real Industry Guidance</li>
+  </ul>
+
+</div>
+
     </div>
   </div>
-
 </section>
 
-<!-- FEATURES SECTION -->
-<section class="py-20 bg-gray-50">
+<!-- ================= FEATURES ================= -->
+<section class="py-20 bg-[#111827] text-white">
   <div class="max-w-6xl mx-auto px-6">
-    <h2 class="text-4xl font-bold text-center mb-14">Why Choose Our Platform?</h2>
 
-    <div class="grid md:grid-cols-3 gap-10 text-center">
-      <div class="bg-white p-8 rounded-xl shadow hover:shadow-xl transition">
-        <div class="text-blue-600 text-5xl mb-4">🤖</div>
-        <h3 class="text-xl font-semibold mb-2">AI Recommendations</h3>
-        <p class="text-gray-600">
-          Smart rule-based AI suggests careers based on your skills & interests.
+    <h2 class="text-4xl font-bold text-center mb-16 reveal">
+      Why Choose Our Platform?
+    </h2>
+
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
+
+      <div class="glass-card reveal tilt-card text-center">
+        <div class="text-5xl mb-4">🤖</div>
+        <h3 class="text-xl font-semibold mb-3">AI Recommendations</h3>
+        <p class="text-gray-400">
+          Intelligent system suggests perfect career paths.
         </p>
       </div>
 
-      <div class="bg-white p-8 rounded-xl shadow hover:shadow-xl transition">
-        <div class="text-green-600 text-5xl mb-4">📊</div>
-        <h3 class="text-xl font-semibold mb-2">Skill Analysis</h3>
-        <p class="text-gray-600">
-          Analyze your current skills and understand where you stand.
+      <div class="glass-card reveal tilt-card text-center">
+        <div class="text-5xl mb-4">📊</div>
+        <h3 class="text-xl font-semibold mb-3">Skill Analysis</h3>
+        <p class="text-gray-400">
+          Understand strengths & growth areas clearly.
         </p>
       </div>
 
-      <div class="bg-white p-8 rounded-xl shadow hover:shadow-xl transition">
-        <div class="text-purple-600 text-5xl mb-4">🚀</div>
-        <h3 class="text-xl font-semibold mb-2">Career Roadmaps</h3>
-        <p class="text-gray-600">
-          Get step-by-step learning paths and course recommendations.
+      <div class="glass-card reveal tilt-card text-center">
+        <div class="text-5xl mb-4">🚀</div>
+        <h3 class="text-xl font-semibold mb-3">Career Roadmaps</h3>
+        <p class="text-gray-400">
+          Step-by-step learning & placement guidance.
         </p>
       </div>
+
     </div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section class="py-20 bg-white">
-  <div class="max-w-6xl mx-auto px-6">
-    <h2 class="text-4xl font-bold text-center mb-16">How It Works</h2>
+<!-- ================= CTA ================= -->
+<section class="py-24 relative overflow-hidden">
 
-    <div class="grid md:grid-cols-4 gap-8 text-center">
-      <div>
-        <div class="text-4xl mb-3">📝</div>
-        <h4 class="font-semibold text-lg">Create Profile</h4>
-        <p class="text-gray-600">Add your interests & skills</p>
-      </div>
+  <div class="absolute inset-0 animated-gradient"></div>
 
-      <div>
-        <div class="text-4xl mb-3">⚙️</div>
-        <h4 class="font-semibold text-lg">AI Processing</h4>
-        <p class="text-gray-600">System analyzes your data</p>
-      </div>
+  <div class="relative z-10 text-center text-white px-6 reveal">
 
-      <div>
-        <div class="text-4xl mb-3">🎯</div>
-        <h4 class="font-semibold text-lg">Career Match</h4>
-        <p class="text-gray-600">Get best career suggestions</p>
-      </div>
+    <h2 class="text-4xl font-bold mb-6">
+      Ready To Build Your Future?
+    </h2>
 
-      <div>
-        <div class="text-4xl mb-3">📈</div>
-        <h4 class="font-semibold text-lg">Growth Path</h4>
-        <p class="text-gray-600">Follow roadmap & courses</p>
-      </div>
-    </div>
+    <p class="mb-10 text-lg text-gray-200">
+      Start your AI career journey today.
+    </p>
+
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="glow-btn">
+        Go To Dashboard
+      </a>
+    {% else %}
+      <a href="{% url 'login' %}?next={% url 'dashboard' %}" class="glow-btn">
+        Get Started Now
+      </a>
+    {% endif %}
+
   </div>
 </section>
 
-<!-- CAREERS SECTION -->
-<section class="py-20 bg-gray-100">
-  <div class="max-w-6xl mx-auto px-6">
-    <h2 class="text-4xl font-bold text-center mb-12">Popular Career Paths</h2>
+<!-- ================= STYLES ================= -->
+<style>
 
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h3 class="text-xl font-semibold mb-2">Data Scientist</h3>
-        <p class="text-gray-600">Analyze data, build ML models, and drive decisions.</p>
-      </div>
+html { scroll-behavior: smooth; }
 
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h3 class="text-xl font-semibold mb-2">Software Developer</h3>
-        <p class="text-gray-600">Build applications, systems, and scalable software.</p>
-      </div>
+/* Animated Gradient */
+.animated-gradient {
+  background: linear-gradient(-45deg,#0f172a,#312e81,#1e1b4b,#0f172a);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+}
+@keyframes gradientMove {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
 
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h3 class="text-xl font-semibold mb-2">Web Developer</h3>
-        <p class="text-gray-600">Create responsive and interactive websites.</p>
-      </div>
-    </div>
-  </div>
-</section>
+/* Blur Ball */
+.blur-ball {
+  position:absolute;
+  width:300px;
+  height:300px;
+  border-radius:50%;
+  filter:blur(140px);
+  opacity:0.3;
+  animation:float 8s ease-in-out infinite alternate;
+}
+@keyframes float {
+  from{transform:translateY(-20px)}
+  to{transform:translateY(20px)}
+}
 
-<!-- CTA SECTION -->
-<section class="py-24 bg-indigo-700 text-white text-center">
-  <h2 class="text-4xl font-bold mb-6">Ready to Discover Your Career?</h2>
-  <p class="mb-10 text-lg">Start your journey with AI-powered guidance today.</p>
+/* Glass Card */
+.glass-card {
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  backdrop-filter:blur(25px);
+  border-radius:20px;
+  transition:all .4s ease;
+}
+.glass-card:hover {
+  transform:translateY(-10px);
+  box-shadow:0 20px 40px rgba(0,0,0,.5);
+}
 
-  {% if user.is_authenticated %}
-    <a href="{% url 'dashboard' %}"
-       class="bg-white text-indigo-700 px-8 py-4 rounded-lg text-lg font-semibold">
-       Go to Dashboard
-    </a>
-  {% else %}
-    <a href="{% url 'login' %}?next={% url 'dashboard' %}"
-       class="bg-white text-indigo-700 px-8 py-4 rounded-lg text-lg font-semibold">
-       Get Started Now
-    </a>
-  {% endif %}
-</section>
+/* Buttons */
+.glow-btn {
+  padding:14px 34px;
+  border-radius:12px;
+  background:linear-gradient(90deg,#6366f1,#a855f7);
+  font-weight:600;
+  transition:.4s;
+  display:inline-block;
+}
+.glow-btn:hover {
+  transform:translateY(-4px);
+  box-shadow:0 15px 35px rgba(168,85,247,.6);
+}
 
-<!-- AUTO HERO SLIDER SCRIPT -->
+.glow-btn-secondary {
+  padding:14px 34px;
+  border-radius:12px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(15px);
+  transition:.4s;
+}
+.glow-btn-secondary:hover {
+  background:rgba(255,255,255,.2);
+}
+
+/* Reveal Animation */
+.reveal {
+  opacity:0;
+  transform:translateY(60px);
+  transition:all 1s ease;
+}
+.reveal.active {
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Mobile Fix */
+@media(max-width:768px){
+  .blur-ball{ display:none; }
+}
+
+</style>
+
+<!-- ================= SCRIPTS ================= -->
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const slides = document.querySelectorAll(".hero-slide");
-    let currentSlide = 0;
 
-    setInterval(() => {
-      slides[currentSlide].classList.remove("opacity-100");
-      slides[currentSlide].classList.add("opacity-0");
-
-      currentSlide = (currentSlide + 1) % slides.length;
-
-      slides[currentSlide].classList.remove("opacity-0");
-      slides[currentSlide].classList.add("opacity-100");
-
-    }, 4000);
+// Reveal Animation
+const reveals = document.querySelectorAll(".reveal");
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add("active");
+    }
   });
+},{threshold:0.2});
+reveals.forEach(r=>observer.observe(r));
+
+// Scroll Progress
+window.addEventListener("scroll",()=>{
+  const winScroll = document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = (winScroll / height) * 100;
+  document.getElementById("progressBar").style.width = scrolled + "%";
+});
+
+// Tilt Effect Desktop Only
+if(window.innerWidth > 768){
+  document.querySelectorAll(".tilt-card").forEach(card=>{
+    card.addEventListener("mousemove",e=>{
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const rotateX = ((y / rect.height) - 0.5) * 12;
+      const rotateY = ((x / rect.width) - 0.5) * -12;
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+    card.addEventListener("mouseleave",()=>{
+      card.style.transform = `rotateX(0) rotateY(0)`;
+    });
+  });
+}
+
 </script>
 
 {% endblock %}

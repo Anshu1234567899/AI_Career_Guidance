@@ -21,12 +21,12 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from .models import Category
 from .forms import CategoryForm
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer,ListFlowable, ListItem
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
 import io
-
+from xml.sax.saxutils import escape
 
 @never_cache
 @login_required
@@ -711,6 +711,8 @@ def delete_category(request, pk):
         return redirect('admin_categories')
     return render(request, 'accounts/admin/delete_category.html', {'category': category})
 
+
+
 def download_career_pdf(request, pk):
     career = Career.objects.get(pk=pk)
 
@@ -719,38 +721,74 @@ def download_career_pdf(request, pk):
     elements = []
 
     styles = getSampleStyleSheet()
-    title = styles["Heading1"]
-    normal = styles["BodyText"]
+    title_style = styles["Heading1"]
+    normal_style = styles["BodyText"]
 
-    elements.append(Paragraph(f"{career.name} Career Guide", title))
+    # Title
+    elements.append(Paragraph(escape(f"{career.name} Career Guide"), title_style))
     elements.append(Spacer(1, 0.4 * inch))
 
-    elements.append(Paragraph(f"<b>Description:</b> {career.description}", normal))
+    # Description
+    description = career.description or "Coming soon"
+    elements.append(Paragraph(f"<b>Description:</b>", normal_style))
+    elements.append(Spacer(1, 0.1 * inch))
+    for line in description.splitlines():
+        if line.strip():
+            elements.append(Paragraph(escape(line), normal_style))
     elements.append(Spacer(1, 0.3 * inch))
 
-    elements.append(Paragraph(f"<b>Average Salary:</b> {career.average_salary or 'Not specified'}", normal))
+    # Average Salary
+    elements.append(Paragraph(f"<b>Average Salary:</b> {escape(career.average_salary or 'Not specified')}", normal_style))
     elements.append(Spacer(1, 0.3 * inch))
 
-    elements.append(Paragraph(f"<b>Future Scope:</b> {career.future_scope or 'Coming soon'}", normal))
+    # Future Scope with bullets
+    elements.append(Paragraph("<b>Future Scope:</b>", normal_style))
+    future_scope = career.future_scope or ""
+    bullets = [line.strip() for line in future_scope.splitlines() if line.strip()]
+    if bullets:
+        bullet_list = ListFlowable(
+            [ListItem(Paragraph(escape(b), normal_style)) for b in bullets],
+            bulletType='bullet',  # Can be 'bullet', '1', 'a', etc.
+            start='•',
+            leftIndent=20,
+        )
+        elements.append(bullet_list)
     elements.append(Spacer(1, 0.3 * inch))
 
-    elements.append(Paragraph("<b>Recommended Courses:</b>", normal))
-    elements.append(Paragraph(career.recommended_courses or "", normal))
+    # Recommended Courses with bullets
+    elements.append(Paragraph("<b>Recommended Courses:</b>", normal_style))
+    courses = career.recommended_courses or ""
+    bullets = [line.strip() for line in courses.splitlines() if line.strip()]
+    if bullets:
+        course_list = ListFlowable(
+            [ListItem(Paragraph(escape(b), normal_style)) for b in bullets],
+            bulletType='bullet',
+            leftIndent=20,
+        )
+        elements.append(course_list)
     elements.append(Spacer(1, 0.3 * inch))
 
-    elements.append(Paragraph("<b>Career Roadmap:</b>", normal))
-    elements.append(Paragraph(career.roadmap or "", normal))
+    # Career Roadmap with bullets
+    elements.append(Paragraph("<b>Career Roadmap:</b>", normal_style))
+    roadmap = career.roadmap or ""
+    bullets = [line.strip() for line in roadmap.splitlines() if line.strip()]
+    if bullets:
+        roadmap_list = ListFlowable(
+            [ListItem(Paragraph(escape(b), normal_style)) for b in bullets],
+            bulletType='bullet',
+            leftIndent=20,
+        )
+        elements.append(roadmap_list)
 
+    # Build PDF
     doc.build(elements)
-
     buffer.seek(0)
+
     return HttpResponse(
         buffer,
         content_type='application/pdf',
         headers={'Content-Disposition': f'attachment; filename="{career.name}_guide.pdf"'},
     )
-
-
 
 
 def calculate_dynamic_career(result, profile):
@@ -801,34 +839,24 @@ def calculate_dynamic_career(result, profile):
 
 @login_required
 def download_personalized_report(request):
-    """
-    Generates a PDF report for the logged-in user's last career quiz attempt.
-    Always uses dynamic calculation to match display page.
-    """
-    # Get last quiz attempt
     result = CareerQuizResult.objects.filter(user=request.user).last()
     if not result:
         return HttpResponse("No valid quiz result found. Please retake the quiz.")
 
-    # Get student profile
     try:
         profile = StudentProfile.objects.get(user=request.user)
     except StudentProfile.DoesNotExist:
         return HttpResponse("Student profile not found.")
 
-    # Always calculate dynamically
     career, description, final_category, final_score, scores = calculate_dynamic_career(result, profile)
 
-    # If still no career found, fallback to suggested_career
     if not career and result.suggested_career:
         career = result.suggested_career
         description = career.description or "No description available."
 
-    # If still no career, abort
     if not career:
         return HttpResponse("No career suggestion available.")
 
-    # Generate PDF
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     elements = []
@@ -837,25 +865,60 @@ def download_personalized_report(request):
     title_style = styles["Heading1"]
     normal_style = styles["BodyText"]
 
-    elements.append(Paragraph(f"{career.name} Career Guide", title_style))
+    # Title
+    elements.append(Paragraph(escape(f"{career.name} Career Guide"), title_style))
     elements.append(Spacer(1, 0.3 * inch))
 
-    elements.append(Paragraph(f"<b>Description:</b> {description}", normal_style))
+    # Description
+    elements.append(Paragraph("<b>Description:</b>", normal_style))
+    for line in (description or "").splitlines():
+        if line.strip():
+            elements.append(Paragraph(escape(line), normal_style))
     elements.append(Spacer(1, 0.2 * inch))
 
-    elements.append(Paragraph(f"<b>Average Salary:</b> {career.average_salary or 'Not specified'}", normal_style))
+    # Average Salary
+    elements.append(Paragraph(f"<b>Average Salary:</b> {escape(career.average_salary or 'Not specified')}", normal_style))
     elements.append(Spacer(1, 0.2 * inch))
 
-    elements.append(Paragraph(f"<b>Future Scope:</b> {career.future_scope or 'Coming soon'}", normal_style))
+    # Future Scope with bullets
+    elements.append(Paragraph("<b>Future Scope:</b>", normal_style))
+    bullets = [line.strip() for line in (career.future_scope or "").splitlines() if line.strip()]
+    if bullets:
+        elements.append(
+            ListFlowable(
+                [ListItem(Paragraph(escape(b), normal_style)) for b in bullets],
+                bulletType='bullet',
+                leftIndent=20,
+            )
+        )
     elements.append(Spacer(1, 0.2 * inch))
 
-    elements.append(Paragraph(f"<b>Recommended Courses:</b>", normal_style))
-    elements.append(Paragraph(career.recommended_courses or "N/A", normal_style))
+    # Recommended Courses with bullets
+    elements.append(Paragraph("<b>Recommended Courses:</b>", normal_style))
+    bullets = [line.strip() for line in (career.recommended_courses or "").splitlines() if line.strip()]
+    if bullets:
+        elements.append(
+            ListFlowable(
+                [ListItem(Paragraph(escape(b), normal_style)) for b in bullets],
+                bulletType='bullet',
+                leftIndent=20,
+            )
+        )
     elements.append(Spacer(1, 0.2 * inch))
 
-    elements.append(Paragraph(f"<b>Career Roadmap:</b>", normal_style))
-    elements.append(Paragraph(career.roadmap or "N/A", normal_style))
+    # Career Roadmap with bullets
+    elements.append(Paragraph("<b>Career Roadmap:</b>", normal_style))
+    bullets = [line.strip() for line in (career.roadmap or "").splitlines() if line.strip()]
+    if bullets:
+        elements.append(
+            ListFlowable(
+                [ListItem(Paragraph(escape(b), normal_style)) for b in bullets],
+                bulletType='bullet',
+                leftIndent=20,
+            )
+        )
 
+    # Build PDF
     doc.build(elements)
     buffer.seek(0)
 
@@ -864,7 +927,6 @@ def download_personalized_report(request):
         content_type="application/pdf",
         headers={'Content-Disposition': f'attachment; filename="{career.name}_personal_report.pdf"'},
     )
-
 def edit_quiz_question(request, id):
     question = CareerQuizQuestion.objects.get(id=id)
     options = CareerQuizOption.objects.filter(question=question)

@@ -4,480 +4,348 @@
   <meta charset="UTF-8">
   <title>AI Career Guidance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <style>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;overflow-x:hidden;}
+html{height:100%;}
 
-  * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* NAV */
+.float-link{position:relative;transition:.35s;}
+.float-link::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:#fde047;transition:.35s;}
+.float-link:hover::after{width:100%;}
+.float-link:hover{transform:translateY(-2px) scale(1.05);}
+.glass-nav{backdrop-filter:blur(14px);background:linear-gradient(to right,rgba(37,99,235,.85),rgba(79,70,229,.85));}
+
+/* 🔥 ANIMATED MOBILE MENU */
+#mobile-menu{
+opacity:0;
+transform:translateY(-15px);
+transition:all .35s ease;
+pointer-events:none;
+}
+#mobile-menu.show{
+opacity:1;
+transform:translateY(0);
+pointer-events:auto;
 }
 
-
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden;
+/* FLOAT BOT */
+#ai-chatbot-icon{
+position:fixed;
+bottom:20px;
+right:20px;
+font-size:42px;
+cursor:pointer;
+z-index:1000;
+animation:floatBot 2.5s ease-in-out infinite;
 }
-body {
-  position: relative;
-}
-html {
-  height: 100%;
-}
-
-
-    /* Smooth floating nav links */
-    .float-link {
-      position: relative;
-      transition: all 0.35s ease;
-    }
-
-    .float-link::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: -6px;
-      width: 0;
-      height: 2px;
-      background: #fde047;
-      transition: width 0.35s ease;
-    }
-
-    .float-link:hover::after {
-      width: 100%;
-    }
-
-    .float-link:hover {
-      transform: translateY(-2px) scale(1.05);
-    }
-
-    /* Glassmorphism navbar */
-    .glass-nav {
-      backdrop-filter: blur(14px);
-      background: linear-gradient(
-        to right,
-        rgba(37, 99, 235, 0.85),
-        rgba(79, 70, 229, 0.85)
-      );
-    }
-
-/* ---------- FLOATING BOT ICON ---------- */
-#ai-chatbot-icon {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    font-size: 42px;
-    cursor: pointer;
-    z-index: 1000;
-    animation: floatBot 2.5s ease-in-out infinite;
+@keyframes floatBot{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-6px);}
 }
 
-@keyframes floatBot {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
+/* 🔥 SIDEBAR CHATBOT */
+#ai-chatbot-box{
+position:fixed;
+top:0;
+right:0;
+height:100%;
+width:420px;
+max-width:100%;
+background:#fff;
+z-index:1001;
+transform:translateX(100%);
+transition:transform .4s ease;
+display:flex;
+flex-direction:column;
+box-shadow:-10px 0 40px rgba(0,0,0,.35);
+}
+#ai-chatbot-box.active{
+transform:translateX(0);
 }
 
-/* ---------- FULLSCREEN OVERLAY ---------- */
-#ai-chatbot-box {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.65);
-    z-index: 1001;
-    justify-content: center;
-    align-items: center;
+/* Chat window */
+.ai-chat-window{
+flex:1;
+display:flex;
+flex-direction:column;
 }
 
-/* ---------- CHAT WINDOW ---------- */
-.ai-chat-window {
-    background: #fff;
-    width: 90%;
-    max-width: 700px;
-    height: 90%;
-    border-radius: 14px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+.ai-chat-header{
+background:linear-gradient(135deg,#4A90E2,#357ABD);
+color:white;
+padding:16px 18px;
+font-size:20px;
+font-weight:600;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.ai-chat-header button{
+background:none;border:none;color:white;font-size:26px;cursor:pointer;
 }
 
-/* ---------- HEADER ---------- */
-.ai-chat-header {
-    background: linear-gradient(135deg, #4A90E2, #357ABD);
-    color: white;
-    padding: 16px 18px;
-    font-size: 20px;
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+#chat-messages{
+flex:1;
+padding:18px;
+overflow-y:auto;
+background:#f4f6fa;
+display:flex;
+flex-direction:column;
 }
 
-.ai-chat-header button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 26px;
-    cursor: pointer;
+.chat-message{
+margin:10px 0;
+padding:12px 16px;
+border-radius:18px;
+max-width:75%;
+word-break:break-word;
+white-space:pre-wrap;
+font-size:15px;
+line-height:1.5;
+box-shadow:0 8px 22px rgba(0,0,0,.22);
 }
+.chat-user{background:#4A90E2;color:#fff;align-self:flex-end;border-bottom-right-radius:6px;}
+.chat-bot{background:#e6e6e6;color:#000;align-self:flex-start;border-bottom-left-radius:6px;}
 
-/* ---------- MESSAGES AREA ---------- */
-#chat-messages {
-    flex: 1;
-    padding: 18px;
-    overflow-y: auto;
-    background: #f4f6fa;
-    display: flex;
-    flex-direction: column;
-}
-
-/* ---------- MESSAGE BUBBLES ---------- */
-.chat-message {
-    margin: 10px 0;
-    padding: 12px 16px;
-    border-radius: 18px;
-    max-width: 75%;
-    word-break: break-word;
-    white-space: pre-wrap;
-    font-size: 15px;
-    line-height: 1.5;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.22);
-}
-
-/* USER MESSAGE */
-.chat-user {
-    background: #4A90E2;
-    color: #fff;
-    align-self: flex-end;
-    border-bottom-right-radius: 6px;
-}
-
-/* BOT MESSAGE */
-.chat-bot {
-    background: #e6e6e6;
-    color: #000;
-    align-self: flex-start;
-    border-bottom-left-radius: 6px;
-}
-
-/* ---------- INPUT AREA ---------- */
-.ai-chat-input {
-    display: flex;
-    border-top: 1px solid #ccc;
-    background: #fff;
-}
-
-.ai-chat-input input {
-    flex: 1;
-    padding: 12px 14px;
-    font-size: 16px;
-    border: none;
-    outline: none;
-}
-
-.ai-chat-input button {
-    padding: 12px 22px;
-    background: #4A90E2;
-    color: white;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-.ai-chat-input button:hover {
-    background: #357ABD;
-}
-
-  </style>
+.ai-chat-input{display:flex;border-top:1px solid #ccc;background:#fff;}
+.ai-chat-input input{flex:1;padding:12px 14px;font-size:16px;border:none;outline:none;}
+.ai-chat-input button{padding:12px 22px;background:#4A90E2;color:white;border:none;font-size:16px;cursor:pointer;transition:.25s;}
+.ai-chat-input button:hover{background:#357ABD;}
+</style>
 </head>
 
 <body class="bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 min-h-screen flex flex-col">
 
-<!-- NAVBAR -->
+<!-- NAVBAR SAME -->
 <nav class="glass-nav shadow-2xl sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+<div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
 
-    <!-- LOGO -->
-    <h1 class="text-xl md:text-2xl font-extrabold tracking-wide text-white flex items-center gap-2">
-      🤖 <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-300">
-        AI Career Guidance
-      </span>
-    </h1>
+<h1 class="text-xl md:text-2xl font-extrabold tracking-wide text-white flex items-center gap-2">
+🤖 <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-300">
+AI Career Guidance
+</span>
+</h1>
 
-    <!-- DESKTOP LINKS -->
-    <div class="hidden md:flex gap-6 items-center text-white font-medium">
-      <a href="/" class="float-link hover:text-yellow-300">Home</a>
-      <a href="{% url 'about_us' %}" class="float-link hover:text-yellow-300">About Us</a>
-      <a href="{% url 'contact' %}" class="float-link hover:text-yellow-300">Contact</a>
+<div class="hidden md:flex gap-6 items-center text-white font-medium">
+<a href="/" class="float-link hover:text-yellow-300">Home</a>
+<a href="{% url 'about_us' %}" class="float-link hover:text-yellow-300">About Us</a>
+<a href="{% url 'contact' %}" class="float-link hover:text-yellow-300">Contact</a>
 
+{% if user.is_authenticated %}
+<a href="{% url 'dashboard' %}" class="float-link hover:text-yellow-300">Dashboard</a>
 
-      {% if user.is_authenticated %}
-        <a href="{% url 'dashboard' %}" class="float-link hover:text-yellow-300">Dashboard</a>
+{% if user.is_staff %}
+<a href="{% url 'admin_dashboard' %}" class="px-4 py-2 rounded-xl font-semibold bg-gradient-to-r from-yellow-400 to-orange-400 text-black shadow-lg hover:scale-105 transition">
+Admin Panel
+</a>
+{% endif %}
 
-        {% if user.is_staff %}
-          <a href="{% url 'admin_dashboard' %}" class="px-4 py-2 rounded-xl font-semibold
-             bg-gradient-to-r from-yellow-400 to-orange-400 text-black shadow-lg hover:scale-105 transition">
-            Admin Panel
-          </a>
-        {% endif %}
+<form method="POST" action="{% url 'logout' %}">
+{% csrf_token %}
+<button type="submit" class="px-4 py-2 rounded-xl font-semibold bg-red-500 hover:bg-red-600 shadow-lg transition">
+Logout
+</button>
+</form>
 
-        <form method="POST" action="{% url 'logout' %}">
-          {% csrf_token %}
-          <button type="submit" class="px-4 py-2 rounded-xl font-semibold bg-red-500 hover:bg-red-600 shadow-lg transition">
-            Logout
-          </button>
-        </form>
+{% else %}
+<a href="{% url 'login' %}" class="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 transition">Login</a>
+<a href="{% url 'register' %}" class="px-4 py-2 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 text-black font-semibold shadow-lg hover:scale-105 transition">Register</a>
+{% endif %}
+</div>
 
-      {% else %}
-        <a href="{% url 'login' %}" class="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 transition">Login</a>
-        <a href="{% url 'register' %}" class="px-4 py-2 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 text-black font-semibold shadow-lg hover:scale-105 transition">Register</a>
+<!-- MOBILE -->
+<div class="md:hidden relative">
+  <button id="mobile-menu-btn" class="text-white focus:outline-none">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <div id="mobile-menu"
+       class="absolute right-0 mt-3 w-56 bg-gray-800 rounded-xl shadow-2xl text-white p-5 space-y-3 z-50 mobile-menu">
+
+    <a href="/" class="block hover:text-yellow-300 transition">Home</a>
+    <a href="{% url 'about_us' %}" class="block hover:text-yellow-300 transition">About Us</a>
+    <a href="{% url 'contact' %}" class="block hover:text-yellow-300 transition">Contact</a>
+
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="block hover:text-yellow-300 transition">Dashboard</a>
+
+      {% if user.is_staff %}
+        <a href="{% url 'admin_dashboard' %}"
+           class="block px-3 py-2 rounded-lg font-semibold bg-gradient-to-r from-yellow-400 to-orange-400 text-black shadow hover:scale-105 transition">
+          Admin Panel
+        </a>
       {% endif %}
-    </div>
 
-    <!-- MOBILE HAMBURGER -->
-    <div class="md:hidden relative">
-      <button id="mobile-menu-btn" class="text-white focus:outline-none">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
+      <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit"
+                class="w-full text-left px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 transition">
+          Logout
+        </button>
+      </form>
 
-      <!-- MOBILE DROPDOWN MENU -->
-      <div id="mobile-menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg flex-col text-white p-4 space-y-2 z-50">
-        <a href="/" class="hover:text-yellow-300 block">Home</a>
-        <a href="{% url 'contact' %}" class="hover:text-yellow-300 block">Contact</a>
-        <a href="{% url 'about_us' %}" class="hover:text-yellow-300 block">About Us</a>
-
-        {% if user.is_authenticated %}
-          <a href="{% url 'dashboard' %}" class="hover:text-yellow-300 block">Dashboard</a>
-
-          {% if user.is_staff %}
-            <a href="{% url 'admin_dashboard' %}" class="hover:text-yellow-300 block">Admin Panel</a>
-          {% endif %}
-
-          <form method="POST" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="w-full text-left hover:text-red-500">Logout</button>
-          </form>
-        {% else %}
-          <a href="{% url 'login' %}" class="hover:text-yellow-300 block">Login</a>
-          <a href="{% url 'register' %}" class="hover:text-yellow-300 block">Register</a>
-        {% endif %}
-      </div>
-    </div>
-
+    {% else %}
+      <a href="{% url 'login' %}"
+         class="block px-3 py-2 rounded-lg bg-white/20 hover:bg-white/30 transition">
+         Login
+      </a>
+      <a href="{% url 'register' %}"
+         class="block px-3 py-2 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 text-black font-semibold shadow hover:scale-105 transition">
+         Register
+      </a>
+    {% endif %}
   </div>
+</div>
+</div>
 </nav>
 
-<!-- CONTENT -->
-<main class="flex-1">
-  {% block content %}{% endblock %}
-</main>
+<main class="flex-1">{% block content %}{% endblock %}</main>
 
 <script>
-  const menuBtn = document.getElementById('mobile-menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
+const menuBtn=document.getElementById('mobile-menu-btn');
+const mobileMenu=document.getElementById('mobile-menu');
 
-  if (menuBtn && mobileMenu) {
+menuBtn.addEventListener('click',e=>{
+e.stopPropagation();
+mobileMenu.classList.toggle('show');
+});
 
-    // Toggle menu on hamburger click
-    menuBtn.addEventListener('click', function (event) {
-      event.stopPropagation();  // important
-      mobileMenu.classList.toggle('hidden');
-    });
-
-    // Close when clicking outside
-    document.addEventListener('click', function (event) {
-      if (!mobileMenu.contains(event.target) && !menuBtn.contains(event.target)) {
-        mobileMenu.classList.add('hidden');
-      }
-    });
-
-  }
+document.addEventListener('click',e=>{
+if(!mobileMenu.contains(e.target)&&!menuBtn.contains(e.target)){
+mobileMenu.classList.remove('show');
+}
+});
 </script>
-
 
 {% if user.is_authenticated %}
 
-<!-- Floating AI Chatbot Button -->
-<div id="ai-chatbot-icon" onclick="toggleChatbot()">
-    🤖
-</div>
+<div id="ai-chatbot-icon" onclick="toggleChatbot()">🤖</div>
 
-<!-- Fullscreen Chatbot Window -->
 <div id="ai-chatbot-box">
-    <div class="ai-chat-window">
-        
-        <!-- Header -->
-        <div class="ai-chat-header">
-            <span>AI Career Mentor</span>
-            <button onclick="toggleChatbot()">✖</button>
-        </div>
-        
-        <!-- Messages -->
-        <div id="chat-messages"></div>
-        
-        <!-- Input -->
-        <div class="ai-chat-input">
-            <input 
-                type="text" 
-                id="user-input" 
-                placeholder="Ask about your career..."
-            >
-            <button onclick="sendMessage()">Send</button>
-        </div>
-
-    </div>
+<div class="ai-chat-window">
+<div class="ai-chat-header">
+<span>AI Career Mentor</span>
+<button onclick="toggleChatbot()">✖</button>
 </div>
-
-
+<div id="chat-messages"></div>
+<div class="ai-chat-input">
+<input type="text" id="user-input" placeholder="Ask about your career...">
+<button onclick="sendMessage()">Send</button>
+</div>
+</div>
+</div>
 
 <script>
-
-function toggleChatbot() {
-    const box = document.getElementById('ai-chatbot-box');
-    box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+function toggleChatbot(){
+document.getElementById('ai-chatbot-box').classList.toggle('active');
 }
 
-/* ---------- ADD MESSAGE (USER) ---------- */
-function addMessage(message, sender='bot') {
-    const chat = document.getElementById('chat-messages');
-    const msgDiv = document.createElement('div');
-
-    msgDiv.textContent = message;
-    msgDiv.style.margin = '10px 0';
-    msgDiv.style.padding = '10px 14px';
-    msgDiv.style.borderRadius = '18px';
-    msgDiv.style.maxWidth = '75%';
-    msgDiv.style.wordBreak = 'break-word';
-    msgDiv.style.whiteSpace = 'pre-wrap';
-    msgDiv.style.boxShadow = '0 6px 18px rgba(0,0,0,0.25)';
-    msgDiv.style.fontSize = '15px';
-
-    if(sender === 'user') {
-        msgDiv.style.background = '#4A90E2';
-        msgDiv.style.color = '#fff';
-        msgDiv.style.alignSelf = 'flex-end';
-    } else {
-        msgDiv.style.background = '#e0e0e0';
-        msgDiv.style.color = '#000';
-        msgDiv.style.alignSelf = 'flex-start';
-    }
-
-    chat.appendChild(msgDiv);
-    chat.scrollTop = chat.scrollHeight;
+function addMessage(msg,sender='bot'){
+const chat=document.getElementById('chat-messages');
+const div=document.createElement('div');
+div.className='chat-message '+(sender==='user'?'chat-user':'chat-bot');
+div.textContent=msg;
+chat.appendChild(div);
+chat.scrollTop=chat.scrollHeight;
 }
 
-/* ---------- AI TYPING EFFECT ---------- */
-function typeWriterEffect(text) {
-    const chat = document.getElementById('chat-messages');
-    const msgDiv = document.createElement('div');
+window.onload=function(){
+addMessage("Hey 👋 I'm Jarvis, your AI Career Mentor.\nAsk me anything about your future 🚀");
+};
 
-    msgDiv.style.margin = '10px 0';
-    msgDiv.style.padding = '10px 14px';
-    msgDiv.style.borderRadius = '18px';
-    msgDiv.style.maxWidth = '75%';
-    msgDiv.style.wordBreak = 'break-word';
-    msgDiv.style.whiteSpace = 'pre-wrap';
-    msgDiv.style.background = '#e0e0e0';
-    msgDiv.style.boxShadow = '0 6px 18px rgba(0,0,0,0.25)';
-    msgDiv.style.alignSelf = 'flex-start';
-    msgDiv.style.fontSize = '15px';
+function sendMessage(){
+const input=document.getElementById('user-input');
+const message=input.value.trim();
+if(!message)return;
 
-    chat.appendChild(msgDiv);
-    chat.scrollTop = chat.scrollHeight;
+addMessage(message,'user');
+input.value='';
 
-    let i = 0;
-    function typeChar() {
-        if (i < text.length) {
-            msgDiv.textContent += text.charAt(i);
-            i++;
-            chat.scrollTop = chat.scrollHeight;
-            setTimeout(typeChar, 18); // typing speed
-        }
-    }
-    typeChar();
-}
-
-/* ---------- SEND MESSAGE ---------- */
-function sendMessage() {
-    const input = document.getElementById('user-input');
-    const message = input.value.trim();
-    if (!message) return;
-
-    addMessage(message, 'user');
-    input.value = '';
-
-    fetch("{% url 'career_chatbot' %}", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({ message })
-    })
-    .then(res => res.json())
-    .then(data => {
-        typeWriterEffect(data.reply); // 🔥 REAL CHAT FEEL
-    })
-    .catch(err => {
-        addMessage("AI backend error", 'bot');
-        console.error(err);
-    });
+fetch("{% url 'career_chatbot' %}",{
+method:'POST',
+headers:{
+'Content-Type':'application/json',
+'X-CSRFToken':'{{ csrf_token }}'
+},
+body:JSON.stringify({message})
+})
+.then(res=>res.json())
+.then(data=>{
+addMessage(data.reply,'bot');
+})
+.catch(()=>addMessage("AI backend error",'bot'));
 }
 </script>
-
 {% endif %}
 
+<!-- ================= FOOTER ================= -->
+<footer class="bg-gray-900 text-gray-300 pt-12 pb-6 mt-10">
+  <div class="max-w-7xl mx-auto px-6">
 
+    <div class="grid md:grid-cols-3 gap-10 text-center md:text-left">
 
-<!-- FOOTER -->
-<footer class="bg-gray-900 text-white py-10 mt-auto">
-  <div class="max-w-6xl mx-auto text-center space-y-4">
+      <!-- Brand -->
+      <div>
+        <h2 class="text-2xl font-bold text-white mb-4">
+          🤖 AI Career Guidance
+        </h2>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          Empowering students with AI-driven career insights,
+          smart assessments, and personalized roadmaps.
+        </p>
+      </div>
 
+      <!-- Quick Links -->
+      <div>
+        <h3 class="text-lg font-semibold text-white mb-4">Quick Links</h3>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/" class="hover:text-yellow-400 transition">Home</a></li>
+          <li><a href="{% url 'about_us' %}" class="hover:text-yellow-400 transition">About Us</a></li>
+          <li><a href="{% url 'contact' %}" class="hover:text-yellow-400 transition">Contact</a></li>
+          <li><a href="{% url 'dashboard' %}" class="hover:text-yellow-400 transition">Dashboard</a></li>
+        </ul>
+      </div>
 
+      <!-- Social Icons -->
+      <div>
+        <h3 class="text-lg font-semibold text-white mb-4">Connect With Us</h3>
+        <div class="flex justify-center md:justify-start gap-6 text-2xl">
 
-    <!-- Social Icons -->
-    <div class="flex justify-center gap-6">
+          <a href="https://linkedin.com" target="_blank"
+             class="hover:text-blue-500 transition transform hover:scale-125">
+            <i class="fab fa-linkedin"></i>
+          </a>
 
-      <!-- Instagram -->
-      <a href="https://www.instagram.com/deepanshupatyal?igsh=MWEwbG15OXRrdHBzZA=="
-         target="_blank"
-         class="hover:scale-110 transition transform">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-7 h-7 hover:text-pink-400 transition"
-             fill="currentColor"
-             viewBox="0 0 24 24">
-          <path d="M7.75 2C4.68 2 2 4.68 2 7.75v8.5C2 19.32 4.68 22 7.75 22h8.5C19.32 22 22 19.32 22 16.25v-8.5C22 4.68 19.32 2 16.25 2h-8.5zm0 2h8.5C18.22 4 20 5.78 20 7.75v8.5c0 1.97-1.78 3.75-3.75 3.75h-8.5C5.78 20 4 18.22 4 16.25v-8.5C4 5.78 5.78 4 7.75 4zm8.5 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zM12 7a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6z"/>
-        </svg>
-      </a>
+          <a href="https://github.com" target="_blank"
+             class="hover:text-gray-400 transition transform hover:scale-125">
+            <i class="fab fa-github"></i>
+          </a>
 
-      <!-- LinkedIn -->
-      <a href="https://in.linkedin.com/in/deepanshupatyal"
-         target="_blank"
-         class="hover:scale-110 transition transform">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-7 h-7 hover:text-blue-400 transition"
-             fill="currentColor"
-             viewBox="0 0 24 24">
-          <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V24h-4V8zm7.5 0h3.6v2.2h.05c.5-.95 1.7-2.2 3.5-2.2 3.75 0 4.45 2.47 4.45 5.67V24h-4v-8.8c0-2.1-.04-4.8-2.93-4.8-2.94 0-3.4 2.3-3.4 4.67V24h-4V8z"/>
-        </svg>
-      </a>
+          <a href="https://instagram.com" target="_blank"
+             class="hover:text-pink-500 transition transform hover:scale-125">
+            <i class="fab fa-instagram"></i>
+          </a>
+
+        </div>
+      </div>
 
     </div>
-    <p class="text-sm tracking-wide">
-      © 2026 <span class="font-semibold text-cyan-400">AI Career Guidance</span>
-    </p>
 
+    <!-- Bottom Line -->
+    <div class="border-t border-gray-700 mt-10 pt-6 text-center text-sm text-gray-500">
+      © 2026 AI Career Guidance. All rights reserved.
+    </div>
 
   </div>
 </footer>
-
 
 </body>
 </html>

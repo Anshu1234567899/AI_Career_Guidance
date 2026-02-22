@@ -1,78 +1,171 @@
 {% extends 'accounts/base.html' %}
 {% block content %}
 
-<!-- Background -->
-<div class="min-h-screen bg-gradient-to-br from-[#141e30] to-[#243b55] flex items-center justify-center px-4">
+<div class="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] flex items-center justify-center px-4">
 
-  <!-- Card -->
-  <div class="w-full max-w-2xl bg-white/15 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 text-white">
+  <!-- Glass Card -->
+  <div class="w-full max-w-2xl bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.4)] p-10 text-white transform transition duration-700 hover:scale-[1.01] animate-fadeIn">
 
     <!-- Header -->
-    <div class="text-center mb-8">
-      <h2 class="text-4xl font-extrabold tracking-wide">
-        ✨ Update Your Profile
+    <div class="text-center mb-10">
+      <h2 class="text-4xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+        Update Your Profile
       </h2>
-      <p class="text-white/70 mt-2">
+      <p class="text-white/60 mt-3">
         Improve your AI career recommendations
       </p>
     </div>
 
-    <!-- Form -->
-    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form method="POST" class="space-y-8" id="profile-form">
       {% csrf_token %}
 
       <!-- Interest -->
-      <div>
+      <div class="relative">
         <label class="block mb-2 font-semibold text-cyan-300">
           🎯 Primary Interest
         </label>
+
         <input
           name="interest"
+          id="interest"
+          required
           value="{{ profile.interest }}"
-          placeholder="e.g. Data Science, Web Development"
-          class="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-white placeholder-white/60 transition"
+          placeholder="Enter your main interest..."
+          class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 text-white placeholder-white/40 transition duration-300"
         >
+
+        <p id="interest-error" class="text-red-400 text-sm mt-2 hidden">
+          Please enter your primary interest.
+        </p>
       </div>
 
       <!-- Skills -->
       <div>
-        <label class="block mb-3 font-semibold text-cyan-300">
-          🛠 Select Your Skills
-        </label>
+        <div class="flex justify-between items-center mb-3">
+          <label class="font-semibold text-cyan-300">
+            🛠 Select Your Skills
+          </label>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {% for skill in skills %}
-            <label class="flex items-center gap-2 bg-white/20 border border-white/30 px-3 py-2 rounded-lg cursor-pointer hover:bg-cyan-400/20 transition">
-              <input type="checkbox"
-                     name="skills"
-                     value="{{ skill.id }}"
-                     class="accent-cyan-400"
-                     {% if skill in profile.skills.all %}checked{% endif %}>
-              <span class="text-sm">{{ skill.name }}</span>
-            </label>
-          {% endfor %}
+          <button type="button"
+                  id="clear-skills"
+                  class="text-sm bg-red-500/20 hover:bg-red-500/40 text-red-300 px-3 py-1 rounded-lg transition duration-300">
+            Clear All
+          </button>
         </div>
+
+        <select id="skills-dropdown"
+                name="skills"
+                multiple
+                required
+                class="w-full text-black rounded-lg">
+
+          {% for skill in skills %}
+            <option value="{{ skill.id }}"
+              {% if skill in profile.skills.all %}selected{% endif %}>
+              {{ skill.name }}
+            </option>
+          {% endfor %}
+
+        </select>
+
+        <p id="skills-error" class="text-red-400 text-sm mt-2 hidden">
+          Please select at least one skill.
+        </p>
       </div>
 
-      <!-- Profile Picture -->
-
       <!-- Buttons -->
-      <div class="flex gap-4 pt-6">
-        <button
-          type="submit"
-          class="w-full bg-cyan-400 hover:bg-cyan-300 text-gray-900 font-bold py-3 rounded-xl transition duration-300 shadow-lg">
-          💾 Save Profile
+      <div class="flex gap-4 pt-4">
+
+        <button type="submit"
+          class="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-blue-500 hover:to-cyan-400 text-gray-900 font-bold py-3 rounded-xl transition duration-300 shadow-lg hover:shadow-cyan-500/40 hover:scale-105">
+          Save Profile
         </button>
 
         <a href="{% url 'dashboard' %}"
-           class="w-full text-center bg-white/20 hover:bg-white/30 border border-white/30 py-3 rounded-xl transition">
-          ↩ Cancel
+           class="w-full text-center bg-white/10 hover:bg-white/20 border border-white/20 py-3 rounded-xl transition duration-300 hover:scale-105">
+          Cancel
         </a>
+
       </div>
 
     </form>
 
   </div>
 </div>
+
+<!-- Animations -->
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.shake {
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+</style>
+
+<!-- Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const form = document.getElementById("profile-form");
+  const interestInput = document.getElementById("interest");
+  const interestError = document.getElementById("interest-error");
+  const skillsError = document.getElementById("skills-error");
+
+  const select = new TomSelect("#skills-dropdown", {
+      plugins: ['remove_button'],
+      placeholder: "Search & select your skills...",
+      maxOptions: 500,
+      create: false,
+      hideSelected: true,
+      closeAfterSelect: false,
+  });
+
+  // Clear all
+  document.getElementById("clear-skills").addEventListener("click", function() {
+      select.clear();
+  });
+
+  form.addEventListener("submit", function(e) {
+
+      let valid = true;
+
+      // Reset errors
+      interestError.classList.add("hidden");
+      skillsError.classList.add("hidden");
+      interestInput.classList.remove("border-red-500");
+
+      // Interest validation
+      if (!interestInput.value.trim()) {
+          interestError.classList.remove("hidden");
+          interestInput.classList.add("border-red-500", "shake");
+          valid = false;
+      }
+
+      // Skills validation
+      if (select.getValue().length === 0) {
+          skillsError.classList.remove("hidden");
+          valid = false;
+      }
+
+      if (!valid) {
+          e.preventDefault();
+      }
+  });
+
+});
+</script>
 
 {% endblock %}
