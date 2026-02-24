@@ -3,10 +3,8 @@
 
 <div class="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] flex items-center justify-center px-4">
 
-  <!-- Glass Card -->
   <div class="w-full max-w-2xl bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.4)] p-10 text-white transform transition duration-700 hover:scale-[1.01] animate-fadeIn">
 
-    <!-- Header -->
     <div class="text-center mb-10">
       <h2 class="text-4xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
         Update Your Profile
@@ -61,7 +59,7 @@
 
           {% for skill in skills %}
             <option value="{{ skill.id }}"
-              {% if skill in profile.skills.all %}selected{% endif %}>
+              {% if skill.id in student_skill_ids %}selected{% endif %}>
               {{ skill.name }}
             </option>
           {% endfor %}
@@ -93,7 +91,6 @@
   </div>
 </div>
 
-<!-- Animations -->
 <style>
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
@@ -115,7 +112,6 @@
 }
 </style>
 
-<!-- Script -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -133,7 +129,6 @@ document.addEventListener("DOMContentLoaded", function() {
       closeAfterSelect: false,
   });
 
-  // Clear all
   document.getElementById("clear-skills").addEventListener("click", function() {
       select.clear();
   });
@@ -142,19 +137,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
       let valid = true;
 
-      // Reset errors
       interestError.classList.add("hidden");
       skillsError.classList.add("hidden");
       interestInput.classList.remove("border-red-500");
 
-      // Interest validation
       if (!interestInput.value.trim()) {
           interestError.classList.remove("hidden");
           interestInput.classList.add("border-red-500", "shake");
           valid = false;
       }
 
-      // Skills validation
       if (select.getValue().length === 0) {
           skillsError.classList.remove("hidden");
           valid = false;

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import StudentProfile
-from .models import Skill, StudentProfile
+from .models import Skill, StudentProfile,StudentSkill
 from django.shortcuts import get_object_or_404
 from .models import Career
 from django.views.decorators.cache import never_cache
@@ -15,7 +15,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_POST
-from .models import CareerQuizQuestion, CareerQuizOption, CareerQuizResult ,Category
+from .models import CareerQuizQuestion, CareerQuizOption, CareerQuizResult ,Category,CombinedCareerResult
 from django.http import HttpResponse
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -31,35 +31,67 @@ from xml.sax.saxutils import escape
 @never_cache
 @login_required
 def dashboard(request):
-    # Get or create profile
     profile, created = StudentProfile.objects.get_or_create(user=request.user)
 
-    career_scores = recommend_career(profile)
-    top_career = career_scores[0][0] if career_scores and career_scores[0][0] else None
+    combined_result = CombinedCareerResult.objects.filter(
+        student=profile
+    ).order_by("-created_at").first()
 
+    top_career = combined_result.suggested_career if combined_result else None
+
+    all_careers = []
+    quiz_scores = {}
+
+    if combined_result:
+        quiz_scores = {
+            "Quiz Score": combined_result.quiz_score,
+            "Skill Score": combined_result.skill_score,
+        }
+        all_careers.append((top_career, combined_result.total_score))
+
+    # ================= PROFILE COMPLETION =================
     completion = 0
 
-    # 1️⃣ Profile picture
     if profile.profile_picture:
-        completion += 25
+        completion += 15
 
-    # 2️⃣ Interest
-    if profile.interest:
-        completion += 25
+    if (profile.interest or "").strip():
+        completion += 15
 
-    # 3️⃣ Skills (at least 1)
-    if profile.skills.exists():
-        completion += 25
+    if (profile.education_level or "").strip():
+        completion += 15
 
-    # 4️⃣ Career matched
-    if top_career:
-        completion += 25
+    if (profile.stream or "").strip():
+        completion += 15
+
+    # Graduation completion logic
+    if profile.education_level in ["graduate", "postgraduate"]:
+        if profile.graduation_field and profile.graduation_field.strip():
+            completion += 10
+    else:
+        # 10th / 12th students ke liye auto complete
+        completion += 10
+
+    if (profile.location_preference or "").strip():
+        completion += 10
+
+    if profile.student_skills.exists():
+        completion += 10
+
+    if combined_result and combined_result.suggested_career:
+        completion += 10
+
+    completion = min(completion, 100)
+    # ======================================================
 
     return render(request, "accounts/dashboard.html", {
         "profile": profile,
         "career": top_career,
-        "all_careers": career_scores,
-        "completion": completion
+        "career_result": combined_result,
+        "all_careers": all_careers,
+        "quiz_scores": quiz_scores,
+        "completion": completion,
+        
     })
 
 def about_us(request):
@@ -71,37 +103,50 @@ def about_us(request):
 @login_required
 def edit_account(request):
     user = request.user
-    profile = StudentProfile.objects.get(user=user)
+    profile, created = StudentProfile.objects.get_or_create(user=user)
 
     if request.method == "POST":
-        user.first_name = request.POST.get("first_name", "")
-        user.last_name = request.POST.get("last_name", "")
-        user.email = request.POST.get("email", "")
 
-        # 🗑 Delete photo (FIXED)
-        if "remove_photo" in request.POST:
+        user.first_name = request.POST.get("first_name", "").strip()
+        user.last_name = request.POST.get("last_name", "").strip()
+        email = request.POST.get("email", "").strip()
+
+        if User.objects.filter(email=email).exclude(id=user.id).exists():
+            messages.error(request, "Email already in use.")
+            return redirect("edit_account")
+
+        user.email = email
+
+        # ---------------- Basic Info ----------------
+        profile.education_level = request.POST.get("education_level")
+        profile.stream = request.POST.get("stream")
+        profile.graduation_field = request.POST.get("graduation_field")
+        profile.post_graduation_field = request.POST.get("post_graduation_field")
+        profile.location_preference = request.POST.get("location_preference")
+        profile.interest = request.POST.get("interest")
+
+        # ---------------- Profile Picture ----------------
+        if request.POST.get("remove_photo"):
             if profile.profile_picture:
                 profile.profile_picture.delete(save=False)
             profile.profile_picture = None
 
-        # 📤 Upload new photo
         if request.FILES.get("profile_picture"):
+            if profile.profile_picture:
+                profile.profile_picture.delete(save=False)
             profile.profile_picture = request.FILES["profile_picture"]
 
         user.save()
         profile.save()
-
+        messages.success(request, "Account updated successfully!")
         return redirect("dashboard")
 
-    return render(request, "accounts/edit_account.html", {
-        "user": user,
-        "profile": profile
-    })
-
+    return render(request, "accounts/edit_account.html", {"profile": profile})
 
 
 def home(request):
     return render(request, 'accounts/home.html')
+
 
 def login_view(request):
     if request.method == "POST":
@@ -160,54 +205,93 @@ def edit_profile(request):
     if request.method == "POST":
         profile.interest = request.POST.get("interest", "")
 
-        # Always update skills, even if none selected
-        selected_skills = request.POST.getlist("skills")
-        profile.skills.set(selected_skills)
+        # -------- Update Skills --------
+        selected_skill_ids = request.POST.getlist("skills")
 
-        # Profile picture update
+        # delete old skills
+        profile.student_skills.all().delete()
+
+        # add new skills
+        for skill_id in selected_skill_ids:
+            StudentSkill.objects.create(
+                student=profile,
+                skill_id=skill_id,
+                level=5
+            )
+
+        # profile picture
         if request.FILES.get("profile_picture"):
             profile.profile_picture = request.FILES["profile_picture"]
 
         profile.save()
+
+        # 🔥🔥 CAREER RECALCULATION (MAIN FIX)
+        last_result = CombinedCareerResult.objects.filter(student=profile).last()
+
+        if last_result:
+            career_obj, _, _ = calculate_combined_career(profile)
+
+            # calculate new skill score
+            user_skills = {
+                ss.skill.name.lower(): ss.level
+                for ss in profile.student_skills.select_related("skill")
+            }
+
+            skill_score = 0
+            if career_obj:
+                career_skills = {
+                    s.name.lower()
+                    for s in career_obj.required_skills.all()
+                }
+                matched = set(user_skills.keys()) & career_skills
+                skill_score = sum(user_skills[s] for s in matched)
+
+            # update result
+            last_result.suggested_career = career_obj
+            last_result.skill_score = skill_score
+            last_result.total_score = last_result.quiz_score + skill_score
+            last_result.save()
+
+        messages.success(request, "Profile updated & career recalculated ✅")
         return redirect("dashboard")
+
+    # -------- GET --------
+    student_skill_ids = profile.student_skills.values_list("skill_id", flat=True)
 
     return render(request, "accounts/edit_profile.html", {
         "profile": profile,
-        "skills": skills
+        "skills": skills,
+        "student_skill_ids": student_skill_ids,
     })
 
-
-
-def recommend_career(profile):
-    user_skills = [skill.name.lower() for skill in profile.skills.all()]
-    if not user_skills:
-        return [(None, 0)]
-
+def calculate_combined_career(profile, quiz_result=None):
+    # Skill Score
+    user_skills = {ss.skill.name.lower(): ss.level for ss in profile.student_skills.select_related("skill").all()}
     career_scores = []
-
-    for career in Career.objects.all():
-        career_skills = [skill.name.lower() for skill in career.required_skills.all()]
-
-        if not career_skills:
-            continue  # Skip careers with no skills to avoid ZeroDivisionError
-
-        # Match calculation (safe)
-        matching_skills = [s for s in user_skills if any(s in c for c in career_skills)]
-        if not matching_skills:
-            continue  # Skip if no match
-
-        score = (len(matching_skills) / len(career_skills)) * 100
-        career_scores.append((career, round(score, 2)))
-
-    if not career_scores:
-        return [(None, 0)]
-
+    for career in Career.objects.prefetch_related("required_skills").all():
+        career_skills = {skill.name.lower() for skill in career.required_skills.all()}
+        matched = set(user_skills.keys()) & career_skills
+        if matched:
+            score = sum(user_skills[s] for s in matched)  # skill levels included
+            career_scores.append((career, score))
     career_scores.sort(key=lambda x: x[1], reverse=True)
-    return career_scores
 
+    # Quiz Score
+    if quiz_result:
+        quiz_scores = {}
+        for answer in getattr(quiz_result, "answers", []):
+            cat = getattr(answer, "category", None)
+            score = getattr(answer, "score", 0)
+            if cat:
+                quiz_scores[cat] = quiz_scores.get(cat, 0) + score
 
+        if quiz_scores:
+            top_cat = max(quiz_scores, key=quiz_scores.get)
+            top_career = Career.objects.filter(category=top_cat).first()
+            return top_career, career_scores, quiz_scores
 
-
+    top_career = career_scores[0][0] if career_scores else None
+    return top_career, career_scores, {}
 
 @login_required
 def career_detail(request, career_id):
@@ -240,6 +324,9 @@ def admin_dashboard(request):
     total_quiz_questions = CareerQuizQuestion.objects.count()
     total_quiz_results = CareerQuizResult.objects.count()  # 👈 ADD THIS
 
+    recent_students = StudentProfile.objects.select_related('user').order_by('-id')[:10]
+
+
     context = {
         'total_users': total_users,
         'total_careers': total_careers,
@@ -247,6 +334,7 @@ def admin_dashboard(request):
         'total_categories': total_categories,
         "total_quiz_questions": total_quiz_questions,
         "total_quiz_results": total_quiz_results,  # 👈 ADD
+        'recent_students': recent_students,
     }
 
     return render(request, 'accounts/admin/dashboard.html', context)
@@ -471,61 +559,113 @@ def contact_view(request):
 
     return render(request, 'accounts/contact.html', {'form': form})
 
+
 @login_required
 def career_quiz(request):
-    questions = CareerQuizQuestion.objects.prefetch_related('careerquizoption_set')
 
+    # ---------- Get Profile Safely ----------
+    try:
+        profile = StudentProfile.objects.get(user=request.user)
+    except StudentProfile.DoesNotExist:
+        messages.error(request, "Student profile not found.")
+        return redirect("dashboard")
+
+    # ---------- Check Previous Result ----------
+    last_result = CombinedCareerResult.objects.filter(
+        student=profile
+    ).last()
+
+    # Already attempted → dashboard bhejo (unless retake)
+    if last_result and not request.GET.get("retake") and request.method != "POST":
+        messages.info(request, "You have already attempted the quiz.")
+        return redirect("dashboard")
+
+    # ---------- Load Questions ----------
+    questions = CareerQuizQuestion.objects.prefetch_related("options").all()
+
+    # ================= POST SUBMIT =================
     if request.method == "POST":
-        scores = {}
 
+        scores = {}
+        unanswered = False
+
+        # -------- Collect Answers --------
         for question in questions:
             selected_option_id = request.POST.get(f"question_{question.id}")
 
-            if selected_option_id:
-                try:
-                    option = CareerQuizOption.objects.get(id=selected_option_id)
+            if not selected_option_id:
+                unanswered = True
+                continue
 
-                    if option.category:  # safety check
-                        scores[option.category] = scores.get(option.category, 0) + option.weight
+            try:
+                option = CareerQuizOption.objects.get(id=selected_option_id)
 
-                except CareerQuizOption.DoesNotExist:
-                    pass
+                if option.category:
+                    scores[option.category] = (
+                        scores.get(option.category, 0) + option.weight
+                    )
+
+            except CareerQuizOption.DoesNotExist:
+                continue
+
+        # -------- Validation --------
+        if unanswered:
+            messages.error(request, "Please answer all questions.")
+            return redirect("career_quiz")
 
         if not scores:
-            return render(request, "accounts/result.html", {
-                "career": "No Result",
-                "description": "Please answer all questions."
-            })
+            messages.error(request, "Something went wrong. Try again.")
+            return redirect("career_quiz")
 
+        # -------- Quiz Result --------
         best_category = max(scores, key=scores.get)
-        final_score = scores[best_category]
+        quiz_score = scores[best_category]
 
-        career_obj = Career.objects.filter(category=best_category).first()
+        career_obj = Career.objects.filter(
+            category=best_category
+        ).first()
+
+        # -------- Skill Score Calculation --------
+        user_skills = {
+            ss.skill.name.lower(): ss.level
+            for ss in profile.student_skills.select_related("skill")
+        }
+
+        skill_score = 0
 
         if career_obj:
-            career_name = career_obj.name
-            description = career_obj.description
-        else:
-            career_name = best_category.name if best_category else "No Category Found"
-            description = "This category matches your personality."
+            career_skills = {
+                skill.name.lower()
+                for skill in career_obj.required_skills.all()
+            }
 
-        CareerQuizResult.objects.create(
-            user=request.user,
-            suggested_career=career_obj,
-            total_score=final_score
+            matched_skills = set(user_skills.keys()) & career_skills
+            skill_score = sum(user_skills[s] for s in matched_skills)
+
+        # -------- Final Score --------
+        total_score = quiz_score + skill_score
+
+        # ✅ UPDATE instead of CREATE
+        CombinedCareerResult.objects.update_or_create(
+            student=profile,
+            defaults={
+                "suggested_career": career_obj,
+                "quiz_score": quiz_score,
+                "skill_score": skill_score,
+                "total_score": total_score,
+            }
         )
 
-        return render(request, "accounts/result.html", {
-            "career": career_name,
-            "description": description,
-            "final_score": final_score,
-            "category": best_category.name if best_category else "",
-            "scores": scores
-        })
+        messages.success(request, "Quiz submitted successfully!")
+        return redirect("career_result")
 
-    return render(request, "accounts/quiz.html", {"questions": questions})
+    # ================= GET REQUEST =================
+    context = {
+        "questions": questions,
+        "retake_mode": bool(request.GET.get("retake")),
+    }
 
-
+    return render(request, "accounts/quiz.html", context)
 
 @login_required
 def admin_quiz_list(request):
@@ -594,26 +734,32 @@ def admin_quiz_delete(request, id):
     return redirect('admin_quiz_list')
 @staff_member_required
 def admin_quiz_results(request):
-    results = CareerQuizResult.objects.select_related(
-        "user", "suggested_career"
+
+    # ✅ Correct model use karo
+    results = CombinedCareerResult.objects.select_related(
+        "student__user",
+        "suggested_career"
     ).order_by("-created_at")
 
-    careers = Career.objects.all()  # For dropdown
+    careers = Career.objects.all()
 
     if request.method == "POST":
         result_id = request.POST.get("result_id")
         career_id = request.POST.get("career")
-        result = CareerQuizResult.objects.get(id=result_id)
+
+        result = get_object_or_404(CombinedCareerResult, id=result_id)
+
         if career_id:
             result.suggested_career_id = career_id
         else:
             result.suggested_career = None
+
         result.save()
-        return redirect("admin_quiz_results")  # reload page after save
+        return redirect("admin_quiz_results")
 
     return render(request, "accounts/admin/quiz_results.html", {
         "results": results,
-        "careers": careers
+        "careers": careers,
     })
 
 from django.db.models import Q
@@ -622,20 +768,18 @@ from django.db.models import Q
 def skill_based_careers(request):
     profile = StudentProfile.objects.get(user=request.user)
 
-    user_skills = profile.skills.all()
+    # Correct fetch of skills
+    user_skills = Skill.objects.filter(studentskill__student=profile)
+
     careers = Career.objects.none()
 
     # 1️⃣ Skill match
     if user_skills.exists():
-        careers = Career.objects.filter(
-            required_skills__in=user_skills
-        )
+        careers = Career.objects.filter(required_skills__in=user_skills)
 
     # 2️⃣ Interest match
     if profile.interest:
-        interest_based = Career.objects.filter(
-            category__name__icontains=profile.interest
-        )
+        interest_based = Career.objects.filter(category__name__icontains=profile.interest)
         careers = careers | interest_based
 
     careers = careers.distinct()
@@ -643,7 +787,6 @@ def skill_based_careers(request):
     return render(request, 'accounts/skill_based.html', {
         'careers': careers
     })
-
 # def run_migrations(request):
 #     import subprocess
 #     import os
@@ -944,3 +1087,32 @@ def admin_quiz_result_delete(request, id):
     result.delete()
     return redirect('admin_quiz_results')
 
+
+@login_required
+def career_result(request):
+
+    profile = StudentProfile.objects.get(user=request.user)
+
+    result = CombinedCareerResult.objects.filter(
+        student=profile
+    ).select_related("suggested_career").last()
+
+    if not result:
+        messages.error(request, "No quiz result found.")
+        return redirect("career_quiz")
+
+    career = result.suggested_career
+
+    context = {
+        "career": career.name if career else "No Career",
+        "career_obj": career,   # 👈 IMPORTANT (clickable link ke liye)
+        "description": career.description if career else "",
+        "final_score": result.total_score,
+    }
+
+    return render(request, "accounts/result.html", context)
+
+
+def admin_student_profiles(request):
+    students = StudentProfile.objects.select_related('user').all()
+    return render(request, 'accounts/admin/student_profiles.html', {'students': students})

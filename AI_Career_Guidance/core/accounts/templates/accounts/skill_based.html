@@ -23,9 +23,7 @@
           {% endif %}
 
           <div class="p-6">
-            <p class="text-gray-600 mb-4 line-clamp-3">
-              {{ career.description }}
-            </p>
+            
 
             {% if career.average_salary %}
             <p class="text-gray-700 font-medium mb-2">
@@ -34,14 +32,7 @@
             </p>
             {% endif %}
 
-            {% if career.future_scope %}
-            <p class="text-gray-700 font-medium mb-4">
-              🚀 Future Scope:
-              <span class="text-indigo-600">
-                {{ career.future_scope|truncatewords:15 }}
-              </span>
-            </p>
-            {% endif %}
+           
 
             <a href="{% url 'career_detail' career.id %}"
                class="inline-block bg-indigo-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">

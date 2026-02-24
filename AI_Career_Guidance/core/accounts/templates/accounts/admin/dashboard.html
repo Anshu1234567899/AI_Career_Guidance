@@ -1,108 +1,112 @@
 {% extends 'accounts/admin/base_admin.html' %}
 
 {% block content %}
-<h1 class="text-3xl font-bold mb-6 text-cyan-400">📊 Admin Dashboard</h1>
+<h1 class="text-3xl font-bold mb-6 text-cyan-400 text-center sm:text-left">📊 Admin Dashboard</h1>
 
 <!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
-        <h2 class="text-xl font-semibold text-white">Users</h2>
-        <p class="text-cyan-400 text-3xl font-bold">{{ total_users }}</p>
-    </div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+  <div class="bg-gray-800 p-6 rounded-xl shadow text-center hover:scale-105 transition-transform">
+    <h2 class="text-xl font-semibold text-white">Users</h2>
+    <p class="text-cyan-400 text-3xl font-bold">{{ total_users }}</p>
+  </div>
 
-    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
-        <h2 class="text-xl font-semibold text-white">Careers</h2>
-        <p class="text-cyan-400 text-3xl font-bold">{{ total_careers }}</p>
-    </div>
+  <div class="bg-gray-800 p-6 rounded-xl shadow text-center hover:scale-105 transition-transform">
+    <h2 class="text-xl font-semibold text-white">Careers</h2>
+    <p class="text-blue-400 text-3xl font-bold">{{ total_careers }}</p>
+  </div>
 
-    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
-        <h2 class="text-xl font-semibold text-white">Skills</h2>
-        <p class="text-cyan-400 text-3xl font-bold">{{ total_skills }}</p>
-    </div>
+  <div class="bg-gray-800 p-6 rounded-xl shadow text-center hover:scale-105 transition-transform">
+    <h2 class="text-xl font-semibold text-white">Skills</h2>
+    <p class="text-orange-400 text-3xl font-bold">{{ total_skills }}</p>
+  </div>
 
-    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
-        <h2 class="text-xl font-semibold text-white">Categories</h2>
-        <p class="text-cyan-400 text-3xl font-bold">{{ total_categories }}</p>
-    </div>
+  <div class="bg-gray-800 p-6 rounded-xl shadow text-center hover:scale-105 transition-transform">
+    <h2 class="text-xl font-semibold text-white">Categories</h2>
+    <p class="text-green-400 text-3xl font-bold">{{ total_categories }}</p>
+  </div>
 
-    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
-        <h2 class="text-xl font-semibold text-white">Quiz Questions</h2>
-        <p class="text-cyan-400 text-3xl font-bold">{{ total_quiz_questions }}</p>
-    </div>
+  <div class="bg-gray-800 p-6 rounded-xl shadow text-center hover:scale-105 transition-transform">
+    <h2 class="text-xl font-semibold text-white">Quiz Questions</h2>
+    <p class="text-purple-400 text-3xl font-bold">{{ total_quiz_questions }}</p>
+  </div>
 
-    <!-- ✅ NEW CARD -->
-    <div class="bg-gray-800 p-6 rounded-xl shadow text-center">
-        <h2 class="text-xl font-semibold text-white">Quiz Results</h2>
-        <p class="text-cyan-400 text-3xl font-bold">{{ total_quiz_results }}</p>
-    </div>
+  <div class="bg-gray-800 p-6 rounded-xl shadow text-center hover:scale-105 transition-transform">
+    <h2 class="text-xl font-semibold text-white">Quiz Results</h2>
+    <p class="text-red-400 text-3xl font-bold">{{ total_quiz_results }}</p>
+  </div>
 </div>
 
-<!-- Chart.js Canvas -->
-<div class="mt-8 bg-gray-800 p-6 rounded-xl shadow">
-    <canvas id="dashboardChart"></canvas>
+<!-- Multi-color Chart -->
+<div class="mt-8 bg-gray-800 p-4 rounded-xl shadow w-full overflow-x-auto" style="min-height:350px;">
+  <canvas id="dashboardChart" class="w-full h-64 sm:h-80"></canvas>
 </div>
 
-<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 const ctx = document.getElementById('dashboardChart').getContext('2d');
-const dashboardChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Users', 'Careers', 'Skills','Categories', 'Quiz Questions', 'Quiz Results'],
-        datasets: [{
-            label: 'Total Count',
-            data: [
-                {{ total_users }},
-                {{ total_careers }},
-                {{ total_skills }},
-                {{ total_categories }},
-                {{ total_quiz_questions }},
-                {{ total_quiz_results }}
-            ],
-            backgroundColor: [
-                'rgba(14, 116, 144, 0.8)',
-                'rgba(34, 197, 94, 0.8)',
-                'rgba(234, 88, 12, 0.8)',
-                'rgba(168, 85, 247, 0.8)',
-                'rgba(239, 68, 68, 0.8)',
-                'rgba(59, 130, 246, 0.8)'
-            ],
-            borderColor: [
-                'rgba(14, 116, 144, 1)',
-                'rgba(34, 197, 94, 1)',
-                'rgba(234, 88, 12, 1)',
-                'rgba(168, 85, 247, 1)',
-                'rgba(239, 68, 68, 1)',
-                'rgba(59, 130, 246, 1)'
-            ],
-            borderWidth: 1
-        }]
+
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Users','Careers','Skills','Categories','Quiz Questions','Quiz Results'],
+    datasets: [{
+      label: 'Total Count',
+      data: [
+        {{ total_users }},
+        {{ total_careers }},
+        {{ total_skills }},
+        {{ total_categories }},
+        {{ total_quiz_questions }},
+        {{ total_quiz_results }}
+      ],
+      backgroundColor: [
+        'rgba(14,203,255,0.8)',
+        'rgba(0,123,255,0.8)',
+        'rgba(255,159,64,0.8)',
+        'rgba(0,200,83,0.8)',
+        'rgba(153,102,255,0.8)',
+        'rgba(255,99,132,0.8)'
+      ],
+      borderColor: [
+        'rgba(14,203,255,1)',
+        'rgba(0,123,255,1)',
+        'rgba(255,159,64,1)',
+        'rgba(0,200,83,1)',
+        'rgba(153,102,255,1)',
+        'rgba(255,99,132,1)'
+      ],
+      borderWidth: 1,
+      borderRadius: 8,
+      barPercentage: 0.6,
+      categoryPercentage: 0.6
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 1500, easing: 'easeOutBounce' },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        enabled: true,
+        backgroundColor: '#0ecbff',
+        titleColor: '#000',
+        bodyColor: '#000',
+        bodyFont: { weight: 'bold' }
+      }
     },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true,
-                precision: 0,
-                ticks: {
-                    color: 'white'
-                }
-            },
-            x: {
-                ticks: {
-                    color: 'white'
-                }
-            }
-        },
-        responsive: true,
-        plugins: {
-            legend: {
-                labels: {
-                    color: 'white'
-                }
-            }
-        }
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: { color: 'white', stepSize: 1 },
+        grid: { color: 'rgba(255,255,255,0.1)' }
+      },
+      x: {
+        ticks: { color: 'white', font: { size: 12 }, maxRotation: 45, minRotation: 0 },
+        grid: { color: 'rgba(255,255,255,0.1)' }
+      }
     }
+  }
 });
 </script>
 

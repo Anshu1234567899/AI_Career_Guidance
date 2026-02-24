@@ -10,63 +10,87 @@
       🎯 Career Insight Generated
     </div>
 
-    <!-- Career Circle -->
+    {% if career_obj %}
+
+    <!-- Career Circle (CLICKABLE) -->
     <div class="relative mx-auto mb-8 w-40 h-40 flex items-center justify-center">
       <div class="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 blur-2xl opacity-40 animate-pulse"></div>
 
-      <div class="relative w-36 h-36 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-lg font-bold shadow-2xl text-center px-3">
-        {{ career }}
-      </div>
+      <a href="{% url 'career_detail' career_obj.id %}">
+        <div class="relative w-36 h-36 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-lg font-bold shadow-2xl text-center px-3 hover:scale-105 transition duration-300">
+          {{ career_obj.name }}
+        </div>
+      </a>
     </div>
 
-    <!-- Career Title -->
+    <!-- Career Title (CLICKABLE) -->
     <h2 class="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-      {{ career }}
+      <a href="{% url 'career_detail' career_obj.id %}" class="hover:underline">
+        {{ career_obj.name }}
+      </a>
     </h2>
 
-    <!-- Dynamic Description -->
+    {% else %}
+
+    <h2 class="text-3xl font-bold mb-6 text-red-400">
+      No Career Found
+    </h2>
+
+    {% endif %}
+
+    <!-- Description -->
     <p class="text-white/80 mb-8 text-lg leading-relaxed">
       {{ description }}
     </p>
 
     <!-- Score Breakdown -->
-<div class="bg-white/5 rounded-2xl p-6 mb-8 text-left space-y-3">
-  <h3 class="text-xl font-semibold text-cyan-300 mb-2">
-    📊 Your Skill Breakdown:
-  </h3>
+    <div class="bg-white/5 rounded-2xl p-6 mb-8 text-left space-y-3">
+      <h3 class="text-xl font-semibold text-cyan-300 mb-2">
+        📊 Your Skill Breakdown:
+      </h3>
 
-  {% for cat, score in scores.items %}
-    <p>
-      {{ cat.name }} :
-      <span class="font-bold text-cyan-300">{{ score }}</span>
-    </p>
-  {% endfor %}
+      {% if scores %}
+        {% for cat, score in scores.items %}
+          <p>
+            {{ cat.name }} :
+            <span class="font-bold text-cyan-300">{{ score }}</span>
+          </p>
+        {% endfor %}
+      {% endif %}
 
-  <hr class="border-white/10 my-3">
+      <hr class="border-white/10 my-3">
 
-  <p class="text-lg">
-    🎯 Final Category:
-    <span class="font-bold text-cyan-300">{{ category }}</span>
-  </p>
+      <p class="text-lg">
+        🎯 Final Score:
+        <span class="font-bold text-cyan-300">{{ final_score }}</span>
+      </p>
+    </div>
 
-  <p class="text-lg">
-    ⭐ Final Score:
-    <span class="font-bold text-cyan-300">{{ final_score }}</span>
-  </p>
-</div>
+    <!-- Buttons -->
+    <div class="flex flex-wrap gap-4 mt-6 justify-center">
 
-<div class="flex flex-wrap gap-4 mt-6">
-    <a href="{% url 'download_personalized_report' %}"
-       class="px-8 py-4 rounded-2xl bg-purple-500 hover:bg-purple-600 font-bold transition shadow-xl">
-       📑 Download Personalized Report
-    </a>
+      
 
-    <a href="{% url 'dashboard' %}"
-       class="px-10 py-4 rounded-3xl bg-gradient-to-r from-cyan-400 to-blue-500 text-gray-900 font-bold text-lg shadow-xl hover:scale-105 hover:shadow-cyan-400/40 transition duration-300">
-      🚀 Go to Dashboard
-    </a>
-</div>
+        {% if career_obj %}
+        <a href="{% url 'career_detail' career_obj.id %}"
+           class="px-8 py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-600 font-bold transition shadow-xl">
+           View Details
+        </a>
+        {% else %}
+        <span>No career available</span>
+        {% endif %}
 
+      </div>
+      <div class="flex flex-wrap gap-4 mt-6 justify-center">
+
+    
+
+        <a href="{% url 'dashboard' %}"
+           class="px-10 py-4 rounded-3xl bg-gradient-to-r from-cyan-400 to-blue-500 text-gray-900 font-bold text-lg shadow-xl hover:scale-105 hover:shadow-cyan-400/40 transition duration-300">
+          🚀 Go to Dashboard
+        </a>
+
+    </div>
 
   </div>
 

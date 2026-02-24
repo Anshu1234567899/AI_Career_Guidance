@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from .views import (
     home, login_view, register_view, dashboard, logout_view,
-    edit_profile, career_detail,admin_quiz_result_delete,about_us,
+    edit_profile, career_detail,admin_quiz_result_delete,about_us,career_result,admin_student_profiles,
 
     # admin panel views
     admin_dashboard, admin_users, admin_careers,contact_view,career_quiz,admin_quiz_add,admin_quiz_edit,skill_based_careers,admin_categories,edit_category,delete_category,admin_quiz_results,
@@ -49,6 +49,9 @@ urlpatterns = [
     path('quiz-results/',admin_quiz_results, name='admin_quiz_results'),
     path('quiz-results/delete/<int:id>/', admin_quiz_result_delete, name='admin_quiz_result_delete'),
     path('about_us/',about_us, name='about_us'),
+    path("career-result/", career_result, name="career_result"),
+    path('admin-panel/students/', admin_student_profiles, name='admin_student_profiles'),
+
 
     # path('run-migrations/', run_migrations),
     # path('create-superuser/', create_superuser, name='create_superuser'),

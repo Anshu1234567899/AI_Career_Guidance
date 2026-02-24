@@ -1,0 +1,49 @@
+{% extends 'accounts/admin/base_admin.html' %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6 text-cyan-400">👨‍🎓 Student Profiles</h1>
+
+<!-- Student Profiles Table -->
+<div class="overflow-x-auto -mx-6 px-6">
+    <table class="min-w-full text-left text-white">
+        <thead class="border-b border-gray-600">
+            <tr>
+                <th class="py-3 px-2">Username</th>
+                <th class="py-3 px-2">Email</th>
+                <th class="py-3 px-2">Education</th>
+                <th class="py-3 px-2">Interest</th>
+                <th class="py-3 px-2 text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr class="border-b border-gray-700 hover:bg-gray-700/40">
+                <td class="py-2 px-2">{{ student.user.username }}</td>
+                <td class="py-2 px-2">{{ student.user.email }}</td>
+                <td class="py-2 px-2">{{ student.education_level|default:"-" }}</td>
+                <td class="py-2 px-2">{{ student.interest|default:"-" }}</td>
+                <td class="text-center py-2 flex flex-wrap justify-center gap-2">
+                    <!-- Edit Button -->
+                    <a href="{% url 'admin_user_edit' student.user.id %}" 
+                       class="px-3 py-1 bg-cyan-500 hover:bg-cyan-600 rounded text-sm font-semibold">
+                       Edit
+                    </a>
+                    <!-- Delete Button -->
+                    <a href="{% url 'admin_user_delete' student.user.id %}" 
+                       class="px-3 py-1 bg-red-500 hover:bg-red-600 rounded text-sm font-semibold"
+                       onclick="return confirm('Are you sure you want to delete this student?')">
+                       Delete
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center py-6 text-gray-400">
+                    No students found
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
