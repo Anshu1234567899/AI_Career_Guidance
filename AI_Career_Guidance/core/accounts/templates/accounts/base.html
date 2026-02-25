@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -49,74 +50,152 @@ animation:floatBot 2.5s ease-in-out infinite;
 50%{transform:translateY(-6px);}
 }
 
-/* 🔥 SIDEBAR CHATBOT */
+
+/* ================= FLOATING 3D ICON ================= */
+#ai-chatbot-icon{
+position:fixed;
+bottom:25px;
+right:25px;
+width:70px;
+height:70px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+border-radius:50%;
+cursor:pointer;
+z-index:1000;
+color:#fff;
+background:linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);
+background-size:300% 300%;
+animation:gradientMove 6s ease infinite,floatBot 3s ease-in-out infinite;
+box-shadow:0 20px 50px rgba(99,102,241,.6);
+transition:.3s;
+}
+#ai-chatbot-icon:hover{
+transform:scale(1.1) rotate(8deg);
+}
+
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+@keyframes floatBot{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-10px);}
+}
+
+/* ================= PREMIUM GLASS PANEL ================= */
 #ai-chatbot-box{
 position:fixed;
 top:0;
 right:0;
-height:100%;
+height:100vh;
 width:420px;
 max-width:100%;
-background:#fff;
-z-index:1001;
+background:rgba(15,15,35,.90);
+backdrop-filter:blur(30px);
+border-left:1px solid rgba(255,255,255,.1);
+box-shadow:-30px 0 80px rgba(0,0,0,.7);
 transform:translateX(100%);
-transition:transform .4s ease;
+transition:transform .5s cubic-bezier(.77,0,.18,1);
 display:flex;
 flex-direction:column;
-box-shadow:-10px 0 40px rgba(0,0,0,.35);
+z-index:1001;
 }
+
 #ai-chatbot-box.active{
 transform:translateX(0);
 }
 
-/* Chat window */
+/* 🔥 THIS WAS MISSING */
 .ai-chat-window{
-flex:1;
 display:flex;
 flex-direction:column;
+height:100%;
 }
 
+/* Header */
 .ai-chat-header{
-background:linear-gradient(135deg,#4A90E2,#357ABD);
+background:linear-gradient(135deg,#4f46e5,#7c3aed);
+padding:20px;
 color:white;
-padding:16px 18px;
-font-size:20px;
+font-size:18px;
 font-weight:600;
 display:flex;
 justify-content:space-between;
 align-items:center;
 }
-.ai-chat-header button{
-background:none;border:none;color:white;font-size:26px;cursor:pointer;
-}
 
+/* 🔥 REAL SCROLL FIX */
 #chat-messages{
 flex:1;
-padding:18px;
 overflow-y:auto;
-background:#f4f6fa;
+padding:20px;
 display:flex;
 flex-direction:column;
+gap:14px;
+min-height:0;   /* CRITICAL FIX */
 }
 
+/* Scrollbar */
+#chat-messages::-webkit-scrollbar{
+width:6px;
+}
+#chat-messages::-webkit-scrollbar-thumb{
+background:linear-gradient(#6366f1,#8b5cf6);
+border-radius:10px;
+}
+
+/* Bubble */
 .chat-message{
-margin:10px 0;
-padding:12px 16px;
-border-radius:18px;
+padding:14px 18px;
+border-radius:22px;
 max-width:75%;
-word-break:break-word;
-white-space:pre-wrap;
-font-size:15px;
-line-height:1.5;
-box-shadow:0 8px 22px rgba(0,0,0,.22);
+font-size:14.5px;
+line-height:1.6;
+word-wrap:break-word;
 }
-.chat-user{background:#4A90E2;color:#fff;align-self:flex-end;border-bottom-right-radius:6px;}
-.chat-bot{background:#e6e6e6;color:#000;align-self:flex-start;border-bottom-left-radius:6px;}
 
-.ai-chat-input{display:flex;border-top:1px solid #ccc;background:#fff;}
-.ai-chat-input input{flex:1;padding:12px 14px;font-size:16px;border:none;outline:none;}
-.ai-chat-input button{padding:12px 22px;background:#4A90E2;color:white;border:none;font-size:16px;cursor:pointer;transition:.25s;}
-.ai-chat-input button:hover{background:#357ABD;}
+.chat-user{
+align-self:flex-end;
+background:linear-gradient(135deg,#6366f1,#8b5cf6);
+color:white;
+border-bottom-right-radius:6px;
+}
+
+.chat-bot{
+align-self:flex-start;
+background:rgba(255,255,255,.08);
+color:#fff;
+border:1px solid rgba(255,255,255,.1);
+border-bottom-left-radius:6px;
+}
+
+/* Input */
+.ai-chat-input{
+display:flex;
+background:rgba(255,255,255,.05);
+border-top:1px solid rgba(255,255,255,.1);
+}
+
+.ai-chat-input input{
+flex:1;
+padding:16px;
+border:none;
+background:transparent;
+color:white;
+outline:none;
+}
+
+.ai-chat-input button{
+padding:16px 22px;
+background:linear-gradient(135deg,#6366f1,#8b5cf6);
+border:none;
+color:white;
+cursor:pointer;
+}
 </style>
 </head>
 
@@ -231,15 +310,19 @@ mobileMenu.classList.remove('show');
 
 <div id="ai-chatbot-box">
 <div class="ai-chat-window">
+
 <div class="ai-chat-header">
 <span>AI Career Mentor</span>
 <button onclick="toggleChatbot()">✖</button>
 </div>
+
 <div id="chat-messages"></div>
+
 <div class="ai-chat-input">
-<input type="text" id="user-input" placeholder="Ask about your career...">
+<input type="text" id="user-input" placeholder="Ask about your career..." onkeypress="handleKey(event)">
 <button onclick="sendMessage()">Send</button>
 </div>
+
 </div>
 </div>
 
@@ -248,18 +331,36 @@ function toggleChatbot(){
 document.getElementById('ai-chatbot-box').classList.toggle('active');
 }
 
-function addMessage(msg,sender='bot'){
+function scrollToBottom(){
 const chat=document.getElementById('chat-messages');
-const div=document.createElement('div');
-div.className='chat-message '+(sender==='user'?'chat-user':'chat-bot');
-div.textContent=msg;
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
+chat.scrollTop = chat.scrollHeight + 100;
 }
 
-window.onload=function(){
+function addMessage(msg, sender='bot'){
+const chat=document.getElementById('chat-messages');
+const div=document.createElement('div');
+
+div.className='chat-message '+(sender==='user'?'chat-user':'chat-bot');
+div.textContent=msg;
+
+chat.appendChild(div);
+
+/* Double trigger scroll */
+setTimeout(scrollToBottom,0);
+setTimeout(scrollToBottom,100);
+}
+
+window.addEventListener('load',()=>{
+setTimeout(()=>{
 addMessage("Hey 👋 I'm Jarvis, your AI Career Mentor.\nAsk me anything about your future 🚀");
-};
+},300);
+});
+
+function handleKey(event){
+if(event.key==="Enter"){
+sendMessage();
+}
+}
 
 function sendMessage(){
 const input=document.getElementById('user-input');
@@ -268,6 +369,12 @@ if(!message)return;
 
 addMessage(message,'user');
 input.value='';
+
+const typingDiv=document.createElement('div');
+typingDiv.className='chat-message chat-bot';
+typingDiv.innerText="Typing...";
+document.getElementById('chat-messages').appendChild(typingDiv);
+scrollToBottom();
 
 fetch("{% url 'career_chatbot' %}",{
 method:'POST',
@@ -279,11 +386,16 @@ body:JSON.stringify({message})
 })
 .then(res=>res.json())
 .then(data=>{
+typingDiv.remove();
 addMessage(data.reply,'bot');
 })
-.catch(()=>addMessage("AI backend error",'bot'));
+.catch(()=>{
+typingDiv.remove();
+addMessage("AI backend error",'bot');
+});
 }
 </script>
+
 {% endif %}
 
 <!-- ================= FOOTER ================= -->

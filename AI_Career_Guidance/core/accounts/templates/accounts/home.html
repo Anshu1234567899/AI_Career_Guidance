@@ -40,19 +40,19 @@
           and personality to suggest the best career roadmap.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+      <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
 
-          <a href="{% url 'career_quiz' %}"
-             class="glow-btn text-center">
-            Take Career Assessment
-          </a>
+{% if request.user.is_authenticated and not quiz_done %}
+    <a href="{% url 'career_quiz' %}" class="glow-btn text-center">
+      Personality Quiz
+    </a>
+  {% endif %}
 
-          <a href="{% url 'skill_based' %}"
-             class="glow-btn-secondary text-center">
-            Explore Careers
-          </a>
+  <a href="{% url 'skill_based' %}" class="glow-btn-secondary text-center">
+    Explore Careers
+  </a>
 
-        </div>
+</div>
 
       </div>
 

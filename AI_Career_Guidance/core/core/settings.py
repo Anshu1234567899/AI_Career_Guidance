@@ -13,7 +13,7 @@ import dj_database_url
 import os
 from pathlib import Path
 
-GEMINI_API_KEY= "AIzaSyBvBjBnftZFc1dMl0gXPocxzaFLfqLOiO8"
+GROQ_API_KEY= "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"
 
 
  

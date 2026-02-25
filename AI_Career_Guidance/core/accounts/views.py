@@ -1,3 +1,5 @@
+import profile
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -145,9 +147,20 @@ def edit_account(request):
 
 
 def home(request):
-    return render(request, 'accounts/home.html')
+    quiz_done = False  # default: anonymous users ke liye
 
+    # ✅ Agar user logged in hai, profile fetch karo
+    if request.user.is_authenticated:
+        try:
+            profile = StudentProfile.objects.get(user=request.user)
+            quiz_done = profile.personality_quiz_completed
+        except StudentProfile.DoesNotExist:
+            quiz_done = False
 
+    context = {
+        "quiz_done": quiz_done
+    }
+    return render(request, "accounts/home.html", context)
 def login_view(request):
     if request.method == "POST":
         email = request.POST['email']
@@ -656,6 +669,9 @@ def career_quiz(request):
             }
         )
 
+        profile.personality_quiz_completed = True
+        profile.save()
+
         messages.success(request, "Quiz submitted successfully!")
         return redirect("career_result")
 
@@ -666,6 +682,7 @@ def career_quiz(request):
     }
 
     return render(request, "accounts/quiz.html", context)
+
 
 @login_required
 def admin_quiz_list(request):
@@ -788,36 +805,36 @@ def skill_based_careers(request):
         'careers': careers
     })
 
-@staff_member_required
-def run_migrations(request):
-    import subprocess
-    import os
-    from django.http import HttpResponse
+# @staff_member_required
+# def run_migrations(request):
+#     import subprocess
+#     import os
+#     from django.http import HttpResponse
 
-    # Core folder me jaake migrate run karna
-    core_path = "/opt/render/project/src/AI_Career_Guidance/core"
+#     # Core folder me jaake migrate run karna
+#     core_path = "/opt/render/project/src/AI_Career_Guidance/core"
     
-    result = subprocess.run(
-        ["python", "manage.py", "migrate", "--noinput"],
-        cwd=core_path,            # <--- yahi important hai
-        capture_output=True,
-        text=True
-    )
-    return HttpResponse(f"<pre>{result.stdout}\n{result.stderr}</pre>")
+#     result = subprocess.run(
+#         ["python", "manage.py", "migrate", "--noinput"],
+#         cwd=core_path,            # <--- yahi important hai
+#         capture_output=True,
+#         text=True
+#     )
+#     return HttpResponse(f"<pre>{result.stdout}\n{result.stderr}</pre>")
 
-def create_superuser(request):
-    # Ye secret key ya simple check laga do taki koi aur access na kare
-    if request.GET.get("key") != "mysecret123":
-        return HttpResponse("Not authorized", status=403)
+# def create_superuser(request):
+#     # Ye secret key ya simple check laga do taki koi aur access na kare
+#     if request.GET.get("key") != "mysecret123":
+#         return HttpResponse("Not authorized", status=403)
 
-    if not User.objects.filter(username="admin").exists():
-        User.objects.create_superuser(
-            username="admin",
-            email="admin@example.com",
-            password="Admin@123"
-        )
-        return HttpResponse("Superuser created successfully!")
-    return HttpResponse("Superuser already exists.")
+#     if not User.objects.filter(username="admin").exists():
+#         User.objects.create_superuser(
+#             username="admin",
+#             email="admin@example.com",
+#             password="Admin@123"
+#         )
+#         return HttpResponse("Superuser created successfully!")
+#     return HttpResponse("Superuser already exists.")
 
 @login_required
 def admin_categories(request):
