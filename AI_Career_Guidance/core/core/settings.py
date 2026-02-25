@@ -13,8 +13,7 @@ import dj_database_url
 import os
 from pathlib import Path
 
-GROQ_API_KEY= "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"
-
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
  
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
