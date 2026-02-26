@@ -35,166 +35,173 @@ transform:translateY(0);
 pointer-events:auto;
 }
 
-/* FLOAT BOT */
-#ai-chatbot-icon{
-position:fixed;
-bottom:20px;
-right:20px;
-font-size:42px;
-cursor:pointer;
-z-index:1000;
-animation:floatBot 2.5s ease-in-out infinite;
-}
-@keyframes floatBot{
-0%,100%{transform:translateY(0);}
-50%{transform:translateY(-6px);}
-}
-
-
-/* ================= FLOATING 3D ICON ================= */
-#ai-chatbot-icon{
-position:fixed;
-bottom:25px;
-right:25px;
-width:70px;
-height:70px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:30px;
-border-radius:50%;
-cursor:pointer;
-z-index:1000;
-color:#fff;
-background:linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);
-background-size:300% 300%;
-animation:gradientMove 6s ease infinite,floatBot 3s ease-in-out infinite;
-box-shadow:0 20px 50px rgba(99,102,241,.6);
-transition:.3s;
+/* ================= FLOAT BOT ICON ================= */
+#ai-chatbot-icon {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+  color: #fff;
+  background: linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);
+  background-size: 300% 300%;
+  animation: gradientMove 6s ease infinite, floatBot 3s ease-in-out infinite;
+  box-shadow: 0 20px 50px rgba(99,102,241,.6);
+  transition: .3s;
 }
 #ai-chatbot-icon:hover{
-transform:scale(1.1) rotate(8deg);
+  transform: scale(1.1) rotate(8deg);
+}
+
+/* FLOAT BOT ANIMATION */
+@keyframes floatBot{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
 }
 
 @keyframes gradientMove{
-0%{background-position:0% 50%;}
-50%{background-position:100% 50%;}
-100%{background-position:0% 50%;}
-}
-@keyframes floatBot{
-0%,100%{transform:translateY(0);}
-50%{transform:translateY(-10px);}
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
 }
 
-/* ================= PREMIUM GLASS PANEL ================= */
+/* ================= CHATBOX ================= */
 #ai-chatbot-box{
-position:fixed;
-top:0;
-right:0;
-height:100vh;
-width:420px;
-max-width:100%;
-background:rgba(15,15,35,.90);
-backdrop-filter:blur(30px);
-border-left:1px solid rgba(255,255,255,.1);
-box-shadow:-30px 0 80px rgba(0,0,0,.7);
-transform:translateX(100%);
-transition:transform .5s cubic-bezier(.77,0,.18,1);
-display:flex;
-flex-direction:column;
-z-index:1001;
+  position: fixed;
+  top:0;
+  right:0;
+  height: 100vh;
+  width: 420px;
+  max-width: 100%;
+  background: rgba(15,15,35,.90);
+  backdrop-filter: blur(30px);
+  border-left: 1px solid rgba(255,255,255,.1);
+  box-shadow: -30px 0 80px rgba(0,0,0,.7);
+  transform: translateX(100%);
+  transition: transform .5s cubic-bezier(.77,0,.18,1);
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
 }
 
 #ai-chatbot-box.active{
-transform:translateX(0);
+  transform: translateX(0);
 }
 
-/* 🔥 THIS WAS MISSING */
+/* Chat window flex */
 .ai-chat-window{
-display:flex;
-flex-direction:column;
-height:100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* critical for mobile scroll */
 }
 
 /* Header */
 .ai-chat-header{
-background:linear-gradient(135deg,#4f46e5,#7c3aed);
-padding:20px;
-color:white;
-font-size:18px;
-font-weight:600;
-display:flex;
-justify-content:space-between;
-align-items:center;
+  background: linear-gradient(135deg,#4f46e5,#7c3aed);
+  padding: 20px;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* 🔥 REAL SCROLL FIX */
+/* Chat messages */
 #chat-messages{
-flex:1;
-overflow-y:auto;
-padding:20px;
-display:flex;
-flex-direction:column;
-gap:14px;
-min-height:0;   /* CRITICAL FIX */
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0; /* critical for mobile scroll */
 }
 
 /* Scrollbar */
 #chat-messages::-webkit-scrollbar{
-width:6px;
+  width:6px;
 }
 #chat-messages::-webkit-scrollbar-thumb{
-background:linear-gradient(#6366f1,#8b5cf6);
-border-radius:10px;
+  background:linear-gradient(#6366f1,#8b5cf6);
+  border-radius:10px;
 }
 
-/* Bubble */
+/* Chat bubbles */
 .chat-message{
-padding:14px 18px;
-border-radius:22px;
-max-width:75%;
-font-size:14.5px;
-line-height:1.6;
-word-wrap:break-word;
+  padding:14px 18px;
+  border-radius:22px;
+  max-width:75%;
+  font-size:14.5px;
+  line-height:1.6;
+  word-wrap: break-word;
 }
-
 .chat-user{
-align-self:flex-end;
-background:linear-gradient(135deg,#6366f1,#8b5cf6);
-color:white;
-border-bottom-right-radius:6px;
+  align-self: flex-end;
+  background: linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:white;
+  border-bottom-right-radius:6px;
 }
-
 .chat-bot{
-align-self:flex-start;
-background:rgba(255,255,255,.08);
-color:#fff;
-border:1px solid rgba(255,255,255,.1);
-border-bottom-left-radius:6px;
+  align-self: flex-start;
+  background: rgba(255,255,255,.08);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.1);
+  border-bottom-left-radius:6px;
 }
 
 /* Input */
 .ai-chat-input{
-display:flex;
-background:rgba(255,255,255,.05);
-border-top:1px solid rgba(255,255,255,.1);
+  display:flex;
+  background: rgba(255,255,255,.05);
+  border-top: 1px solid rgba(255,255,255,.1);
 }
 
 .ai-chat-input input{
-flex:1;
-padding:16px;
-border:none;
-background:transparent;
-color:white;
-outline:none;
+  flex:1;
+  padding:16px;
+  border:none;
+  background:transparent;
+  color:white;
+  outline:none;
 }
 
 .ai-chat-input button{
-padding:16px 22px;
-background:linear-gradient(135deg,#6366f1,#8b5cf6);
-border:none;
-color:white;
-cursor:pointer;
+  padding:16px 22px;
+  background: linear-gradient(135deg,#6366f1,#8b5cf6);
+  border:none;
+  color:white;
+  cursor:pointer;
+}
+
+/* ================= MOBILE FIXES ================= */
+@media (max-width:768px){
+  #ai-chatbot-box{
+    width:100vw;
+  }
+  #ai-chatbot-icon{
+    width:60px;
+    height:60px;
+    font-size:28px;
+    bottom:15px;
+    right:15px;
+  }
+  .ai-chat-input input{
+    padding:12px;
+    font-size:14px;
+  }
+  .ai-chat-input button{
+    padding:12px 16px;
+    font-size:14px;
+  }
 }
 </style>
 </head>
@@ -328,71 +335,70 @@ mobileMenu.classList.remove('show');
 
 <script>
 function toggleChatbot(){
-document.getElementById('ai-chatbot-box').classList.toggle('active');
+  document.getElementById('ai-chatbot-box').classList.toggle('active');
 }
 
 function scrollToBottom(){
-const chat=document.getElementById('chat-messages');
-chat.scrollTop = chat.scrollHeight + 100;
+  const chat=document.getElementById('chat-messages');
+  chat.scrollTop = chat.scrollHeight + 100;
 }
 
 function addMessage(msg, sender='bot'){
-const chat=document.getElementById('chat-messages');
-const div=document.createElement('div');
+  const chat=document.getElementById('chat-messages');
+  const div=document.createElement('div');
 
-div.className='chat-message '+(sender==='user'?'chat-user':'chat-bot');
-div.textContent=msg;
+  div.className='chat-message '+(sender==='user'?'chat-user':'chat-bot');
+  div.textContent=msg;
 
-chat.appendChild(div);
+  chat.appendChild(div);
 
-/* Double trigger scroll */
-setTimeout(scrollToBottom,0);
-setTimeout(scrollToBottom,100);
+  setTimeout(scrollToBottom,0);
+  setTimeout(scrollToBottom,100);
 }
 
 window.addEventListener('load',()=>{
-setTimeout(()=>{
-addMessage("Hey 👋 I'm Jarvis, your AI Career Mentor.\nAsk me anything about your future 🚀");
-},300);
+  setTimeout(()=>{
+    addMessage("Hey 👋 I'm Jarvis, your AI Career Mentor.\nAsk me anything about your future 🚀");
+  },300);
 });
 
 function handleKey(event){
-if(event.key==="Enter"){
-sendMessage();
-}
+  if(event.key==="Enter"){
+    sendMessage();
+  }
 }
 
 function sendMessage(){
-const input=document.getElementById('user-input');
-const message=input.value.trim();
-if(!message)return;
+  const input=document.getElementById('user-input');
+  const message=input.value.trim();
+  if(!message) return;
 
-addMessage(message,'user');
-input.value='';
+  addMessage(message,'user');
+  input.value='';
 
-const typingDiv=document.createElement('div');
-typingDiv.className='chat-message chat-bot';
-typingDiv.innerText="Typing...";
-document.getElementById('chat-messages').appendChild(typingDiv);
-scrollToBottom();
+  const typingDiv=document.createElement('div');
+  typingDiv.className='chat-message chat-bot';
+  typingDiv.innerText="Typing...";
+  document.getElementById('chat-messages').appendChild(typingDiv);
+  scrollToBottom();
 
-fetch("{% url 'career_chatbot' %}",{
-method:'POST',
-headers:{
-'Content-Type':'application/json',
-'X-CSRFToken':'{{ csrf_token }}'
-},
-body:JSON.stringify({message})
-})
-.then(res=>res.json())
-.then(data=>{
-typingDiv.remove();
-addMessage(data.reply,'bot');
-})
-.catch(()=>{
-typingDiv.remove();
-addMessage("AI backend error",'bot');
-});
+  fetch("{% url 'career_chatbot' %}",{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'X-CSRFToken':'{{ csrf_token }}'
+    },
+    body: JSON.stringify({message})
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    typingDiv.remove();
+    addMessage(data.reply,'bot');
+  })
+  .catch(()=>{
+    typingDiv.remove();
+    addMessage("AI backend error",'bot');
+  });
 }
 </script>
 
