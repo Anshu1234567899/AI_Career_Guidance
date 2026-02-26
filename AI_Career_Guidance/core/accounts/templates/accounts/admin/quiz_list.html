@@ -17,13 +17,22 @@
         <tr>
             <td>{{ q.question }}</td>
             <td>
-                {% for opt in q.careerquizoption_set.all %}
+                {% for opt in q.options.all %}
                     {{ opt.option_text }} ({{ opt.score }}), 
                 {% endfor %}
             </td>
-            <td>
-                <a href="{% url 'admin_quiz_edit' q.id %}" class="text-cyan-400">Edit</a>
-            </td>
+            <td class="space-x-3">
+    <a href="{% url 'admin_quiz_edit' q.id %}"
+       class="text-cyan-400 font-semibold">
+       Edit
+    </a>
+
+    <a href="{% url 'admin_quiz_delete' q.id %}"
+       class="text-red-400 font-semibold"
+       onclick="return confirm('Delete this question?');">
+       Delete
+    </a>
+</td>
         </tr>
         {% endfor %}
     </tbody>

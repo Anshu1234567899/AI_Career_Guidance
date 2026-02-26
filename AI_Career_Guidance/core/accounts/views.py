@@ -723,7 +723,7 @@ def admin_quiz_add(request):
 @login_required
 def admin_quiz_edit(request, id):
     question = get_object_or_404(CareerQuizQuestion, id=id)
-    options = question.careerquizoption_set.all()
+    options = question.options.all()
     categories = Category.objects.all()
 
     if request.method == "POST":

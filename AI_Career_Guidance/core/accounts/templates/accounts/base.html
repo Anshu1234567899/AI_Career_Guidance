@@ -350,8 +350,29 @@ mobileMenu.classList.remove('show');
 
 <script>
 function toggleChatbot(){
-  document.getElementById('ai-chatbot-box').classList.toggle('active');
-  document.body.classList.toggle('overflow-hidden');
+  const chatBox = document.getElementById('ai-chatbot-box');
+
+  chatBox.classList.toggle('active');
+
+  if(chatBox.classList.contains('active')){
+      // ✅ mobile scroll lock properly
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.width = "100%";
+  }else{
+    // ✅ restore scroll + navbar position safely
+    const scrollY = document.body.style.top;
+
+    document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.width = "";
+
+    if(scrollY){
+        window.scrollTo(0, Math.abs(parseInt(scrollY)));
+    }
+}
 }
 
 function scrollToBottom(){
@@ -416,6 +437,7 @@ function sendMessage(){
     addMessage("AI backend error",'bot');
   });
 }
+
 </script>
 
 {% endif %}
