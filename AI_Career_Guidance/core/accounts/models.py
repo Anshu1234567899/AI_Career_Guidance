@@ -138,6 +138,8 @@ class CombinedCareerResult(models.Model):
     quiz_score = models.IntegerField(default=0)
     total_score = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    match_percentage = models.PositiveIntegerField(null=True, blank=True)
+    skill_gap = models.JSONField(null=True, blank=True)  # 
 
     def __str__(self):
         return f"{self.student.user.username} - {self.suggested_career} ({self.total_score})"

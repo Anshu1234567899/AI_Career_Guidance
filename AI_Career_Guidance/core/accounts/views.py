@@ -34,57 +34,54 @@ from xml.sax.saxutils import escape
 @login_required
 def dashboard(request):
     profile, created = StudentProfile.objects.get_or_create(user=request.user)
-
-    combined_result = CombinedCareerResult.objects.filter(
-        student=profile
-    ).order_by("-created_at").first()
-
+    combined_result = CombinedCareerResult.objects.filter(student=profile).order_by("-created_at").first()
+    
     top_career = combined_result.suggested_career if combined_result else None
-
     all_careers = []
     quiz_scores = {}
+    match_percentage = None
+    skill_gap = []
 
-    if combined_result:
-        quiz_scores = {
-            "Quiz Score": combined_result.quiz_score,
-            "Skill Score": combined_result.skill_score,
+    if combined_result and top_career:
+        # ---------- Use current skills to recalc ----------
+        user_skills = {
+            ss.skill.name.lower(): ss.level
+            for ss in profile.student_skills.select_related("skill")
         }
-        all_careers.append((top_career, combined_result.total_score))
 
-    # ================= PROFILE COMPLETION =================
+        career_skills = {skill.name.lower() for skill in top_career.required_skills.all()}
+        matched_skills = set(user_skills.keys()) & career_skills
+        current_skill_score = sum(user_skills[s] for s in matched_skills)
+        current_skill_gap = list(career_skills - set(user_skills.keys()))
+
+        quiz_score = combined_result.quiz_score  # quiz score doesn't change
+        total_score = (0.6 * quiz_score) + (0.4 * current_skill_score)
+
+        # match percentage
+        max_skill_score = sum(user_skills.values()) if user_skills else 1
+        max_total = (0.6 * quiz_score) + (0.4 * max_skill_score)
+        match_percentage = round((total_score / max_total) * 100) if max_total else 0
+
+        quiz_scores = {
+            "Quiz Score": quiz_score,
+            "Skill Score": current_skill_score,
+        }
+
+        skill_gap = current_skill_gap
+        all_careers.append((top_career, total_score))
+
+    # ---------- Profile completion (same as before) ----------
     completion = 0
-
-    if profile.profile_picture:
-        completion += 15
-
-    if (profile.interest or "").strip():
-        completion += 15
-
-    if (profile.education_level or "").strip():
-        completion += 15
-
-    if (profile.stream or "").strip():
-        completion += 15
-
-    # Graduation completion logic
-    if profile.education_level in ["graduate", "postgraduate"]:
-        if profile.graduation_field and profile.graduation_field.strip():
-            completion += 10
-    else:
-        # 10th / 12th students ke liye auto complete
-        completion += 10
-
-    if (profile.location_preference or "").strip():
-        completion += 10
-
-    if profile.student_skills.exists():
-        completion += 10
-
-    if combined_result and combined_result.suggested_career:
-        completion += 10
-
+    if profile.profile_picture: completion += 15
+    if (profile.interest or "").strip(): completion += 15
+    if (profile.education_level or "").strip(): completion += 15
+    if (profile.stream or "").strip(): completion += 15
+    if profile.education_level in ["graduate", "postgraduate"] and profile.graduation_field: completion += 10
+    else: completion += 10
+    if (profile.location_preference or "").strip(): completion += 10
+    if profile.student_skills.exists(): completion += 10
+    if combined_result and combined_result.suggested_career: completion += 10
     completion = min(completion, 100)
-    # ======================================================
 
     return render(request, "accounts/dashboard.html", {
         "profile": profile,
@@ -92,10 +89,10 @@ def dashboard(request):
         "career_result": combined_result,
         "all_careers": all_careers,
         "quiz_scores": quiz_scores,
+        "match_percentage": match_percentage,
+        "skill_gap": skill_gap,
         "completion": completion,
-        
     })
-
 def about_us(request):
     """
     Render the About Us page for AI Career Guidance.
@@ -588,7 +585,6 @@ def career_quiz(request):
         student=profile
     ).last()
 
-    # Already attempted → dashboard bhejo (unless retake)
     if last_result and not request.GET.get("retake") and request.method != "POST":
         messages.info(request, "You have already attempted the quiz.")
         return redirect("dashboard")
@@ -630,42 +626,79 @@ def career_quiz(request):
             messages.error(request, "Something went wrong. Try again.")
             return redirect("career_quiz")
 
-        # -------- Quiz Result --------
-        best_category = max(scores, key=scores.get)
-        quiz_score = scores[best_category]
+        # -------- Top 2 Personality Categories --------
+        sorted_categories = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        top_categories = [cat[0] for cat in sorted_categories[:2]]
 
-        career_obj = Career.objects.filter(
-            category=best_category
-        ).first()
+        # -------- Get Careers from Top Categories --------
+        careers = Career.objects.filter(
+            category__in=top_categories
+        ).prefetch_related("required_skills")
 
-        # -------- Skill Score Calculation --------
+        if not careers.exists():
+            messages.error(request, "No careers found for your profile.")
+            return redirect("career_quiz")
+
+        # -------- Prepare User Skills --------
         user_skills = {
             ss.skill.name.lower(): ss.level
             for ss in profile.student_skills.select_related("skill")
         }
 
-        skill_score = 0
+        best_career = None
+        best_total_score = 0
+        best_quiz_score = 0
+        best_skill_score = 0
+        skill_gap = []
 
-        if career_obj:
+        # -------- Evaluate Each Career --------
+        for career in careers:
+
+            # Personality score
+            personality_score = scores.get(career.category, 0)
+
+            # Career required skills
             career_skills = {
                 skill.name.lower()
-                for skill in career_obj.required_skills.all()
+                for skill in career.required_skills.all()
             }
 
             matched_skills = set(user_skills.keys()) & career_skills
             skill_score = sum(user_skills[s] for s in matched_skills)
 
-        # -------- Final Score --------
-        total_score = quiz_score + skill_score
+            # Skill Gap
+            career_skill_gap = career_skills - set(user_skills.keys())
 
-        # ✅ UPDATE instead of CREATE
+            # -------- Weighted Total Score --------
+            total_score = (0.6 * personality_score) + (0.4 * skill_score)
+
+            if total_score > best_total_score:
+                best_total_score = total_score
+                best_career = career
+                best_quiz_score = personality_score
+                best_skill_score = skill_score
+                skill_gap = list(career_skill_gap)
+
+        if not best_career:
+            messages.error(request, "No suitable career found.")
+            return redirect("career_quiz")
+
+        # -------- Match Percentage Calculation --------
+        max_personality_score = max(scores.values()) if scores else 0
+        max_skill_score = sum(user_skills.values()) if user_skills else 1
+        max_total = (0.6 * max_personality_score) + (0.4 * max_skill_score)
+        match_percentage = round((best_total_score / max_total) * 100) if max_total else 0
+
+        # -------- Save / Update Result --------
         CombinedCareerResult.objects.update_or_create(
             student=profile,
             defaults={
-                "suggested_career": career_obj,
-                "quiz_score": quiz_score,
-                "skill_score": skill_score,
-                "total_score": total_score,
+                "suggested_career": best_career,
+                "quiz_score": best_quiz_score,
+                "skill_score": best_skill_score,
+                "total_score": best_total_score,
+                "match_percentage": match_percentage,  # you may need to add this field
+                "skill_gap": skill_gap,  # you may need to add this field as JSONField or TextField
             }
         )
 
@@ -682,7 +715,6 @@ def career_quiz(request):
     }
 
     return render(request, "accounts/quiz.html", context)
-
 
 @login_required
 def admin_quiz_list(request):
@@ -805,36 +837,36 @@ def skill_based_careers(request):
         'careers': careers
     })
 
-# @staff_member_required
-# def run_migrations(request):
-#     import subprocess
-#     import os
-#     from django.http import HttpResponse
+@staff_member_required
+def run_migrations(request):
+    import subprocess
+    import os
+    from django.http import HttpResponse
 
-#     # Core folder me jaake migrate run karna
-#     core_path = "/opt/render/project/src/AI_Career_Guidance/core"
+    # Core folder me jaake migrate run karna
+    core_path = "/opt/render/project/src/AI_Career_Guidance/core"
     
-#     result = subprocess.run(
-#         ["python", "manage.py", "migrate", "--noinput"],
-#         cwd=core_path,            # <--- yahi important hai
-#         capture_output=True,
-#         text=True
-#     )
-#     return HttpResponse(f"<pre>{result.stdout}\n{result.stderr}</pre>")
+    result = subprocess.run(
+        ["python", "manage.py", "migrate", "--noinput"],
+        cwd=core_path,            # <--- yahi important hai
+        capture_output=True,
+        text=True
+    )
+    return HttpResponse(f"<pre>{result.stdout}\n{result.stderr}</pre>")
 
-# def create_superuser(request):
-#     # Ye secret key ya simple check laga do taki koi aur access na kare
-#     if request.GET.get("key") != "mysecret123":
-#         return HttpResponse("Not authorized", status=403)
+def create_superuser(request):
+    # Ye secret key ya simple check laga do taki koi aur access na kare
+    if request.GET.get("key") != "mysecret123":
+        return HttpResponse("Not authorized", status=403)
 
-#     if not User.objects.filter(username="admin").exists():
-#         User.objects.create_superuser(
-#             username="admin",
-#             email="admin@example.com",
-#             password="Admin@123"
-#         )
-#         return HttpResponse("Superuser created successfully!")
-#     return HttpResponse("Superuser already exists.")
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="Admin@123"
+        )
+        return HttpResponse("Superuser created successfully!")
+    return HttpResponse("Superuser already exists.")
 
 @login_required
 def admin_categories(request):
@@ -1109,7 +1141,6 @@ def admin_quiz_result_delete(request, id):
 
 @login_required
 def career_result(request):
-
     profile = StudentProfile.objects.get(user=request.user)
 
     result = CombinedCareerResult.objects.filter(
@@ -1122,11 +1153,39 @@ def career_result(request):
 
     career = result.suggested_career
 
+    # ---------- Prepare skill gap & match percentage ----------
+    user_skills = {ss.skill.name.lower(): ss.level for ss in profile.student_skills.all()}
+
+    career_skills = {s.name.lower() for s in career.required_skills.all()} if career else set()
+
+    matched_skills = set(user_skills.keys()) & career_skills
+    skill_score = sum(user_skills[s] for s in matched_skills)
+
+    skill_gap = list(career_skills - set(user_skills.keys()))
+
+    personality_score = result.quiz_score
+    total_score = result.total_score
+
+    # Match Percentage
+    max_personality_score = personality_score or 1
+    max_skill_score = sum(user_skills.values()) if user_skills else 1
+    max_total = (0.6 * max_personality_score) + (0.4 * max_skill_score)
+    match_percentage = round((total_score / max_total) * 100) if max_total else 0
+
+    # Optional: breakdown scores
+    scores = {
+        "Personality": personality_score,
+        "Skills": skill_score,
+    }
+
     context = {
         "career": career.name if career else "No Career",
-        "career_obj": career,   # 👈 IMPORTANT (clickable link ke liye)
+        "career_obj": career,   # clickable link in template
         "description": career.description if career else "",
-        "final_score": result.total_score,
+        "final_score": total_score,
+        "scores": scores,
+        "match_percentage": match_percentage,
+        "skill_gap": skill_gap,
     }
 
     return render(request, "accounts/result.html", context)

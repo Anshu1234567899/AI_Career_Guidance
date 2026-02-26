@@ -17,7 +17,7 @@
       <div class="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 blur-2xl opacity-40 animate-pulse"></div>
 
       <a href="{% url 'career_detail' career_obj.id %}">
-        <div class="relative w-36 h-36 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-lg font-bold shadow-2xl text-center px-3 hover:scale-105 transition duration-300">
+        <div class="relative w-36 h-36 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-xl md:text-2xl font-bold shadow-2xl text-center px-3 hover:scale-105 transition duration-300">
           {{ career_obj.name }}
         </div>
       </a>
@@ -31,11 +31,9 @@
     </h2>
 
     {% else %}
-
     <h2 class="text-3xl font-bold mb-6 text-red-400">
       No Career Found
     </h2>
-
     {% endif %}
 
     <!-- Description -->
@@ -43,15 +41,15 @@
       {{ description }}
     </p>
 
-    <!-- Score Breakdown -->
-    <div class="bg-white/5 rounded-2xl p-6 mb-8 text-left space-y-3">
+    <!-- Score Breakdown Card -->
+    <div class="bg-white/5 rounded-2xl p-6 mb-8 text-left space-y-4 shadow-inner">
       <h3 class="text-xl font-semibold text-cyan-300 mb-2">
         📊 Your Skill Breakdown:
       </h3>
 
       {% if scores %}
         {% for cat, score in scores.items %}
-          <p>
+          <p class="text-lg">
             {{ cat.name }} :
             <span class="font-bold text-cyan-300">{{ score }}</span>
           </p>
@@ -60,36 +58,47 @@
 
       <hr class="border-white/10 my-3">
 
-      <p class="text-lg">
-        🎯 Final Score:
-        <span class="font-bold text-cyan-300">{{ final_score }}</span>
+      <p class="text-2xl font-bold text-cyan-300">
+        🎯 Final Score: {{ final_score }}
       </p>
+    </div>
+
+    <!-- Premium Insights Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+      {% if match_percentage %}
+      <div class="bg-gradient-to-r from-green-400 to-emerald-500 p-6 rounded-2xl shadow-xl flex flex-col items-center justify-center hover:scale-105 transition duration-300">
+        <h4 class="text-lg md:text-xl font-semibold text-white mb-2">🔥 Match Percentage</h4>
+        <span class="text-3xl md:text-4xl font-extrabold text-white">{{ match_percentage }}%</span>
+      </div>
+      {% endif %}
+
+      {% if skill_gap %}
+      <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-6 rounded-2xl shadow-xl flex flex-col items-center justify-center hover:scale-105 transition duration-300">
+        <h4 class="text-lg md:text-xl font-semibold text-white mb-2">💡 Skills to Learn</h4>
+        <p class="text-white text-center font-medium text-sm md:text-base">
+          {{ skill_gap|join:", " }}
+        </p>
+      </div>
+      {% endif %}
+
     </div>
 
     <!-- Buttons -->
     <div class="flex flex-wrap gap-4 mt-6 justify-center">
+      {% if career_obj %}
+      <a href="{% url 'career_detail' career_obj.id %}"
+         class="px-8 py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-600 font-bold transition shadow-xl">
+         View Details
+      </a>
+      {% else %}
+      <span>No career available</span>
+      {% endif %}
 
-      
-
-        {% if career_obj %}
-        <a href="{% url 'career_detail' career_obj.id %}"
-           class="px-8 py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-600 font-bold transition shadow-xl">
-           View Details
-        </a>
-        {% else %}
-        <span>No career available</span>
-        {% endif %}
-
-      </div>
-      <div class="flex flex-wrap gap-4 mt-6 justify-center">
-
-    
-
-        <a href="{% url 'dashboard' %}"
-           class="px-10 py-4 rounded-3xl bg-gradient-to-r from-cyan-400 to-blue-500 text-gray-900 font-bold text-lg shadow-xl hover:scale-105 hover:shadow-cyan-400/40 transition duration-300">
-          🚀 Go to Dashboard
-        </a>
-
+      <a href="{% url 'dashboard' %}"
+         class="px-10 py-4 rounded-3xl bg-gradient-to-r from-cyan-400 to-blue-500 text-gray-900 font-bold text-lg shadow-xl hover:scale-105 hover:shadow-cyan-400/40 transition duration-300">
+        🚀 Go to Dashboard
+      </a>
     </div>
 
   </div>
@@ -101,7 +110,6 @@
   from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 .animate-fadeUp {
   animation: fadeUp 0.8s ease forwards;
 }
