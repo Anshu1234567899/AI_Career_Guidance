@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+ELEVEN_API_KEY = os.environ.get("ELEVEN_API_KEY")
 
  
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

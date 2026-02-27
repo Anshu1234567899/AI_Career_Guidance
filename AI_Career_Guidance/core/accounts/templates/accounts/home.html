@@ -2,280 +2,271 @@
 {% load static %}
 {% block content %}
 
-<!-- Scroll Progress -->
+<!-- ================= TOP SCROLL PROGRESS ================= -->
 <div id="progressBar"
-     class="fixed top-0 left-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-[9999]">
+     class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-[9999] transition-all duration-200">
 </div>
 
 <!-- ================= HERO SECTION ================= -->
-<section class="relative overflow-hidden bg-[#0f172a] text-white">
+<section class="relative min-h-screen flex items-center bg-[#070b1a] text-white overflow-hidden">
 
-  <!-- Animated Gradient Background -->
-  <div class="absolute inset-0 animated-gradient opacity-40"></div>
+  <!-- Background -->
+  <div class="absolute inset-0 bg-gradient-to-br from-[#0b1023] via-[#0f1a3a] to-black"></div>
 
   <!-- Blur Effects -->
-  <div class="blur-ball bg-purple-500 top-10 left-10"></div>
-  <div class="blur-ball bg-indigo-500 bottom-10 right-10"></div>
+  <div class="absolute w-[500px] h-[500px] bg-purple-600/20 blur-[140px] rounded-full top-[-150px] left-[-150px] animate-pulse"></div>
+  <div class="absolute w-[400px] h-[400px] bg-indigo-600/20 blur-[120px] rounded-full bottom-[-120px] right-[-120px] animate-pulse"></div>
 
-  <div class="relative max-w-7xl mx-auto px-6 py-20 md:py-28">
+  <div class="relative max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-16 items-center">
 
-    <div class="grid md:grid-cols-2 gap-12 items-center">
+    <!-- LEFT -->
+    <div class="fade-in-up">
 
-      <!-- LEFT -->
-      <div class="reveal text-center md:text-left">
-
-        <span class="inline-block bg-white/10 px-4 py-1 rounded-full text-sm mb-6 backdrop-blur">
-          🚀 AI Powered Career Platform
+      <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-8">
+        Discover Your Perfect
+        <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          Career Path with AI
         </span>
+      </h1>
 
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6">
-          Discover Your Perfect
-          <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            Career Path
-          </span>
-        </h1>
+      <p class="text-gray-300 text-lg mb-10 max-w-xl">
+        CareerVidya AI analyzes your skills, personality and interests —
+        delivering a personalized career roadmap built for your future.
+      </p>
 
-        <p class="text-gray-300 text-lg mb-8 max-w-xl mx-auto md:mx-0">
-          Smart AI system that analyzes your skills, interests,
-          and personality to suggest the best career roadmap.
-        </p>
+      <div class="flex flex-col sm:flex-row gap-5">
 
-      <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+        {% if request.user.is_authenticated and not quiz_done %}
+        <a href="{% url 'career_quiz' %}"
+           class="px-8 py-4 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-[0_0_35px_rgba(139,92,246,0.7)] transition-all duration-300">
+           Take Free AI Career Test
+        </a>
+        {% endif %}
 
-{% if request.user.is_authenticated and not quiz_done %}
-    <a href="{% url 'career_quiz' %}" class="glow-btn text-center">
-      Personality Quiz
-    </a>
-  {% endif %}
-
-  <a href="{% url 'skill_based' %}" class="glow-btn-secondary text-center">
-    Explore Careers
-  </a>
-
-</div>
+        <a href="{% url 'skill_based' %}"
+           class="px-8 py-4 rounded-xl border border-white/20 backdrop-blur-md hover:bg-white/10 transition-all duration-300">
+           Explore Career Paths
+        </a>
 
       </div>
+    </div>
 
-      <!-- RIGHT CARD -->
-      <div class="glass-card p-8 md:p-10">
+    <!-- RIGHT IMAGE + 3D -->
+    <div class="relative h-[500px] flex items-center justify-center fade-in-up">
 
- <!-- Student Image -->
-<div class="mb-6">
-  <img src="{% static 'images/students.png' %}" 
-       alt="Happy Students"
-       class="w-full h-55 md:h-60 object-center object-cover rounded-2xl shadow-xl border border-white/10">
-</div>
+      <canvas id="brainCanvas"
+              class="absolute inset-0 w-full h-full"></canvas>
 
-  <h3 class="text-2xl font-bold mb-6 text-center md:text-left">
-    Why Students Trust Us
-  </h3>
-
-  <ul class="space-y-4 text-gray-300 text-center md:text-left">
-    <li>✔ Personalized Career Suggestions</li>
-    <li>✔ AI Skill Analysis Engine</li>
-    <li>✔ Step-by-Step Roadmaps</li>
-    <li>✔ Real Industry Guidance</li>
-  </ul>
-
-</div>
+      <div class="relative z-10 group">
+        <img src="{% static 'images/students.png' %}"
+             class="rounded-3xl shadow-2xl border border-white/10 transition duration-500 group-hover:scale-105 group-hover:rotate-1"
+             alt="Students">
+      </div>
 
     </div>
+
+  </div>
+</section>
+
+<!-- ================= PROBLEM SECTION ================= -->
+<section class="py-28 bg-[#0b1023] text-white text-center">
+  <h2 class="text-4xl font-bold mb-12 fade-in-up">
+    Feeling Lost About Your Career?
+  </h2>
+
+  <div class="max-w-5xl mx-auto grid md:grid-cols-3 gap-12 text-gray-300">
+
+    <div class="glass-card p-8 fade-in-up">
+      <div class="text-4xl mb-4">❓</div>
+      <p>Too many career options, but no clarity?</p>
+    </div>
+
+    <div class="glass-card p-8 fade-in-up">
+      <div class="text-4xl mb-4">🎯</div>
+      <p>Not sure what matches your strengths?</p>
+    </div>
+
+    <div class="glass-card p-8 fade-in-up">
+      <div class="text-4xl mb-4">📉</div>
+      <p>Worried about salary & future scope?</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="py-28 bg-[#070b1a] text-white text-center">
+  <h2 class="text-4xl font-bold mb-20 fade-in-up">
+    How It Works
+  </h2>
+
+  <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+
+    <div class="glass-card p-10 fade-in-up tilt">
+      <h3 class="text-xl font-semibold mb-4">1. Analyze You</h3>
+      <p class="text-gray-400">AI studies your skills & personality.</p>
+    </div>
+
+    <div class="glass-card p-10 fade-in-up tilt">
+      <h3 class="text-xl font-semibold mb-4">2. Match Careers</h3>
+      <p class="text-gray-400">Smart algorithm finds ideal paths.</p>
+    </div>
+
+    <div class="glass-card p-10 fade-in-up tilt">
+      <h3 class="text-xl font-semibold mb-4">3. Build Roadmap</h3>
+      <p class="text-gray-400">Get step-by-step learning guidance.</p>
+    </div>
+
   </div>
 </section>
 
 <!-- ================= FEATURES ================= -->
-<section class="py-20 bg-[#111827] text-white">
-  <div class="max-w-6xl mx-auto px-6">
+<section class="py-28 bg-[#0b1023] text-white text-center">
+  <h2 class="text-4xl font-bold mb-20 fade-in-up">Platform Features</h2>
 
-    <h2 class="text-4xl font-bold text-center mb-16 reveal">
-      Why Choose Our Platform?
-    </h2>
+  <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-10 text-gray-300">
 
-    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
+    <div class="glass-card p-8 fade-in-up">AI Career Matching</div>
+    <div class="glass-card p-8 fade-in-up">Skill-Based Recommendations</div>
+    <div class="glass-card p-8 fade-in-up">Salary Insights</div>
+    <div class="glass-card p-8 fade-in-up">Career Roadmap Generation</div>
 
-      <div class="glass-card reveal tilt-card text-center">
-        <div class="text-5xl mb-4">🤖</div>
-        <h3 class="text-xl font-semibold mb-3">AI Recommendations</h3>
-        <p class="text-gray-400">
-          Intelligent system suggests perfect career paths.
-        </p>
-      </div>
-
-      <div class="glass-card reveal tilt-card text-center">
-        <div class="text-5xl mb-4">📊</div>
-        <h3 class="text-xl font-semibold mb-3">Skill Analysis</h3>
-        <p class="text-gray-400">
-          Understand strengths & growth areas clearly.
-        </p>
-      </div>
-
-      <div class="glass-card reveal tilt-card text-center">
-        <div class="text-5xl mb-4">🚀</div>
-        <h3 class="text-xl font-semibold mb-3">Career Roadmaps</h3>
-        <p class="text-gray-400">
-          Step-by-step learning & placement guidance.
-        </p>
-      </div>
-
-    </div>
   </div>
 </section>
 
-<!-- ================= CTA ================= -->
-<section class="py-24 relative overflow-hidden">
+<!-- ================= SOCIAL PROOF ================= -->
+<section class="py-28 bg-[#070b1a] text-white text-center">
+  <div class="max-w-5xl mx-auto grid md:grid-cols-3 gap-12">
 
-  <div class="absolute inset-0 animated-gradient"></div>
+    <div>
+      <h3 class="counter text-5xl font-bold text-indigo-400" data-target="100">0</h3>
+      <p class="text-gray-400 mt-2">Career Paths</p>
+    </div>
 
-  <div class="relative z-10 text-center text-white px-6 reveal">
+    <div>
+      <h3 class="counter text-5xl font-bold text-indigo-400" data-target="500">0</h3>
+      <p class="text-gray-400 mt-2">Students Guided</p>
+    </div>
 
-    <h2 class="text-4xl font-bold mb-6">
-      Ready To Build Your Future?
+    <div>
+      <h3 class="counter text-5xl font-bold text-indigo-400" data-target="95">0</h3>
+      <p class="text-gray-400 mt-2">Accuracy Rate %</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= FINAL CTA ================= -->
+<section class="relative py-32 text-center overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 opacity-80"></div>
+
+  <div class="relative z-10 text-white">
+    <h2 class="text-5xl font-bold mb-8">
+      Start Your AI Career Journey Today
     </h2>
 
-    <p class="mb-10 text-lg text-gray-200">
-      Start your AI career journey today.
-    </p>
-
-    {% if user.is_authenticated %}
-      <a href="{% url 'dashboard' %}" class="glow-btn">
-        Go To Dashboard
-      </a>
-    {% else %}
-      <a href="{% url 'login' %}?next={% url 'dashboard' %}" class="glow-btn">
-        Get Started Now
-      </a>
-    {% endif %}
-
+    <a href="{% url 'dashboard' %}"
+       class="px-10 py-5 bg-black/30 backdrop-blur-xl rounded-xl hover:bg-black/50 transition-all duration-300">
+       Get Started Now
+    </a>
   </div>
 </section>
 
 <!-- ================= STYLES ================= -->
 <style>
-
-html { scroll-behavior: smooth; }
-
-/* Animated Gradient */
-.animated-gradient {
-  background: linear-gradient(-45deg,#0f172a,#312e81,#1e1b4b,#0f172a);
-  background-size: 400% 400%;
-  animation: gradientMove 15s ease infinite;
-}
-@keyframes gradientMove {
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
-
-/* Blur Ball */
-.blur-ball {
-  position:absolute;
-  width:300px;
-  height:300px;
-  border-radius:50%;
-  filter:blur(140px);
-  opacity:0.3;
-  animation:float 8s ease-in-out infinite alternate;
-}
-@keyframes float {
-  from{transform:translateY(-20px)}
-  to{transform:translateY(20px)}
-}
-
-/* Glass Card */
 .glass-card {
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.1);
-  backdrop-filter:blur(25px);
-  border-radius:20px;
-  transition:all .4s ease;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  transition: all 0.4s ease;
 }
 .glass-card:hover {
-  transform:translateY(-10px);
-  box-shadow:0 20px 40px rgba(0,0,0,.5);
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
 }
-
-/* Buttons */
-.glow-btn {
-  padding:14px 34px;
-  border-radius:12px;
-  background:linear-gradient(90deg,#6366f1,#a855f7);
-  font-weight:600;
-  transition:.4s;
-  display:inline-block;
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1s ease;
 }
-.glow-btn:hover {
-  transform:translateY(-4px);
-  box-shadow:0 15px 35px rgba(168,85,247,.6);
+.fade-in-up.active {
+  opacity: 1;
+  transform: translateY(0);
 }
-
-.glow-btn-secondary {
-  padding:14px 34px;
-  border-radius:12px;
-  background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.2);
-  backdrop-filter:blur(15px);
-  transition:.4s;
-}
-.glow-btn-secondary:hover {
-  background:rgba(255,255,255,.2);
-}
-
-/* Reveal Animation */
-.reveal {
-  opacity:0;
-  transform:translateY(60px);
-  transition:all 1s ease;
-}
-.reveal.active {
-  opacity:1;
-  transform:translateY(0);
-}
-
-/* Mobile Fix */
-@media(max-width:768px){
-  .blur-ball{ display:none; }
-}
-
 </style>
 
 <!-- ================= SCRIPTS ================= -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 
-// Reveal Animation
-const reveals = document.querySelectorAll(".reveal");
-const observer = new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      entry.target.classList.add("active");
-    }
+// Fade animation
+const elements = document.querySelectorAll(".fade-in-up");
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add("active"); }
   });
 },{threshold:0.2});
-reveals.forEach(r=>observer.observe(r));
+elements.forEach(el=>obs.observe(el));
 
-// Scroll Progress
+// Scroll progress
 window.addEventListener("scroll",()=>{
   const winScroll = document.documentElement.scrollTop;
   const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-  const scrolled = (winScroll / height) * 100;
-  document.getElementById("progressBar").style.width = scrolled + "%";
+  document.getElementById("progressBar").style.width = (winScroll/height)*100 + "%";
 });
 
-// Tilt Effect Desktop Only
-if(window.innerWidth > 768){
-  document.querySelectorAll(".tilt-card").forEach(card=>{
-    card.addEventListener("mousemove",e=>{
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const rotateX = ((y / rect.height) - 0.5) * 12;
-      const rotateY = ((x / rect.width) - 0.5) * -12;
-      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    });
-    card.addEventListener("mouseleave",()=>{
-      card.style.transform = `rotateX(0) rotateY(0)`;
-    });
-  });
+// Counter animation
+document.querySelectorAll(".counter").forEach(counter=>{
+  const update=()=>{
+    const target=+counter.getAttribute("data-target");
+    const c=+counter.innerText;
+    const inc=target/100;
+    if(c<target){
+      counter.innerText=Math.ceil(c+inc);
+      setTimeout(update,20);
+    } else { counter.innerText=target; }
+  };
+  update();
+});
+
+// Three.js sphere
+const canvas = document.getElementById("brainCanvas");
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true});
+renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+
+const geometry = new THREE.IcosahedronGeometry(2.5,2);
+const material = new THREE.MeshStandardMaterial({
+  color:0x8b5cf6,
+  wireframe:true,
+  transparent:true,
+  opacity:0.18
+});
+const sphere = new THREE.Mesh(geometry,material);
+scene.add(sphere);
+
+const light = new THREE.PointLight(0xffffff,1);
+light.position.set(5,5,5);
+scene.add(light);
+
+camera.position.z = 6;
+
+function animate(){
+  requestAnimationFrame(animate);
+  sphere.rotation.x += 0.0015;
+  sphere.rotation.y += 0.0025;
+  renderer.render(scene,camera);
 }
+animate();
+
+window.addEventListener("resize",()=>{
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  camera.aspect = canvas.clientWidth / canvas.clientHeight;
+  camera.updateProjectionMatrix();
+});
 
 </script>
 

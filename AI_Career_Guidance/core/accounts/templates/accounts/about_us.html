@@ -1,113 +1,202 @@
 {% extends "accounts/base.html" %}
 {% load static %}
-
 {% block content %}
 
-<!-- Hero Section -->
-<section class="relative bg-gradient-to-r from-cyan-500 to-blue-600 text-white overflow-hidden">
-  <div class="container mx-auto px-6 py-28 relative z-10 text-center">
-    <h1 class="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight drop-shadow-lg animate-fadeIn">About AI Career Guidance</h1>
-    <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fadeIn delay-200">
-      Your AI-powered companion to explore career paths, discover opportunities, and unlock your full potential in the modern tech world.
+<!-- ================= HERO ================= -->
+<section class="relative bg-[#070b1a] text-white overflow-hidden">
+
+  <!-- Background -->
+  <div class="absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#111c44] to-black"></div>
+
+  <!-- Animated Blobs -->
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+
+  <div class="relative max-w-6xl mx-auto px-6 py-32 text-center">
+
+    <h1 class="reveal text-5xl md:text-6xl font-extrabold mb-8">
+      About
+      <span class="animated-gradient-text">
+        CareerVidya AI
+      </span>
+    </h1>
+
+    <p class="reveal delay-200 text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
+      Your AI-powered companion to explore career paths, discover opportunities,
+      and unlock your full potential in the modern tech world.
     </p>
+
   </div>
 </section>
 
-<!-- Our Story / Mission -->
-<section class="py-24 bg-gray-50 dark:bg-gray-900">
-  <div class="container mx-auto flex flex-col md:flex-row items-center gap-16 px-6 md:px-0">
-    <div class="md:w-1/2 animate-slideInLeft">
-      <img src="{% static 'images/career.jpg' %}" alt="Our Mission" class="rounded-3xl shadow-2xl hover:scale-105 transition-transform duration-500 object-cover w-full">
+<!-- ================= OUR STORY ================= -->
+<section class="py-28 bg-[#0b1023] text-white">
+  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+
+    <div class="reveal-left">
+      <img src="{% static 'images/career.jpg' %}"
+           class="rounded-3xl shadow-2xl border border-white/10 hover:scale-105 hover:rotate-1 transition-all duration-700 w-full"
+           alt="Our Mission">
     </div>
-    <div class="md:w-1/2 space-y-6 animate-slideInRight">
-      <h2 class="text-4xl font-bold text-gray-900 dark:text-white">Our Story</h2>
-      <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-        Founded with the vision of bridging the gap between talent and opportunity, <strong>AI Career Guidance</strong> helps students and professionals navigate their career journey with the power of artificial intelligence. We combine smart analytics, expert resources, and personalized recommendations to create a one-stop platform for career success.
+
+    <div class="space-y-6 reveal-right">
+      <h2 class="text-4xl font-bold">Our Story</h2>
+
+      <p class="text-gray-300 text-lg leading-relaxed">
+        <strong class="text-cyan-400">CareerVidya AI</strong> bridges the gap between
+        talent and opportunity using intelligent AI systems.
       </p>
-      <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-        Our AI algorithms analyze skills, interests, and market trends to provide tailored career guidance. Whether you are a student choosing a major or a professional exploring new opportunities, our platform ensures you make informed decisions backed by data.
+
+      <p class="text-gray-400 text-lg leading-relaxed">
+        Our algorithms analyze skills, interests, and market trends to provide
+        precise career recommendations.
       </p>
-      <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-        We aim to empower our users by not only suggesting career paths but also offering access to learning resources, AI tools, and mentorship opportunities. Our goal is simple: make career growth predictable, achievable, and accessible to everyone.
+
+      <p class="text-gray-400 text-lg leading-relaxed">
+        We make career growth predictable, achievable,
+        and accessible for everyone.
       </p>
     </div>
+
   </div>
 </section>
 
-<!-- Features / What We Offer -->
-<section class="py-24 bg-white dark:bg-gray-800">
-  <div class="container mx-auto px-6 md:px-0 text-center">
-    <h2 class="text-4xl font-bold mb-16 text-gray-900 dark:text-white">What We Offer</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<!-- ================= FEATURES ================= -->
+<section class="py-28 bg-[#070b1a] text-white text-center">
+  <h2 class="reveal text-4xl font-bold mb-20">What We Offer</h2>
 
-      <div class="bg-gray-100 dark:bg-gray-700 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 hover:scale-105 transition-all duration-500 p-8 text-center">
-        <div class="text-5xl mb-4">🧠</div>
-        <h3 class="text-2xl font-semibold mb-3 text-gray-900 dark:text-white">AI-Powered Recommendations</h3>
-        <p class="text-gray-600 dark:text-gray-300">Receive personalized career suggestions based on your skills, experience, and interests.</p>
-      </div>
+  <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
 
-      <div class="bg-gray-100 dark:bg-gray-700 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 hover:scale-105 transition-all duration-500 p-8 text-center">
-        <div class="text-5xl mb-4">📚</div>
-        <h3 class="text-2xl font-semibold mb-3 text-gray-900 dark:text-white">Learning Resources</h3>
-        <p class="text-gray-600 dark:text-gray-300">Access top AI, ML, and tech courses, tutorials, and books curated to boost your career potential.</p>
-      </div>
-
-      <div class="bg-gray-100 dark:bg-gray-700 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 hover:scale-105 transition-all duration-500 p-8 text-center">
-        <div class="text-5xl mb-4">🚀</div>
-        <h3 class="text-2xl font-semibold mb-3 text-gray-900 dark:text-white">Career Insights</h3>
-        <p class="text-gray-600 dark:text-gray-300">Get real-time insights on trending careers, skills in demand, and emerging tech opportunities.</p>
-      </div>
-
+    <div class="glass-card reveal">
+      <div class="text-5xl mb-6">🧠</div>
+      <h3 class="text-2xl font-semibold mb-4">AI Recommendations</h3>
+      <p class="text-gray-400">
+        Smart career suggestions powered by AI.
+      </p>
     </div>
-  </div>
-</section>
 
-<!-- Core Values / Highlights -->
-<section class="py-24 bg-gray-50 dark:bg-gray-900">
-  <div class="container mx-auto px-6 md:px-0 text-center">
-    <h2 class="text-4xl font-bold mb-16 text-gray-900 dark:text-white">Our Core Values</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-      <div class="bg-gray-100 dark:bg-gray-700 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 hover:scale-105 transition-all duration-500 p-8 text-center">
-        <div class="text-5xl mb-4">🎯</div>
-        <h3 class="text-2xl font-semibold mb-3 text-gray-900 dark:text-white">Precision</h3>
-        <p class="text-gray-600 dark:text-gray-300">Accurate guidance backed by AI insights and data-driven recommendations.</p>
-      </div>
-
-      <div class="bg-gray-100 dark:bg-gray-700 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 hover:scale-105 transition-all duration-500 p-8 text-center">
-        <div class="text-5xl mb-4">💡</div>
-        <h3 class="text-2xl font-semibold mb-3 text-gray-900 dark:text-white">Innovation</h3>
-        <p class="text-gray-600 dark:text-gray-300">Cutting-edge AI algorithms and tools to personalize learning and career paths.</p>
-      </div>
-
-      <div class="bg-gray-100 dark:bg-gray-700 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 hover:scale-105 transition-all duration-500 p-8 text-center">
-        <div class="text-5xl mb-4">🤝</div>
-        <h3 class="text-2xl font-semibold mb-3 text-gray-900 dark:text-white">Integrity</h3>
-        <p class="text-gray-600 dark:text-gray-300">We provide honest, reliable, and ethical guidance for all users.</p>
-      </div>
+    <div class="glass-card reveal delay-200">
+      <div class="text-5xl mb-6">📚</div>
+      <h3 class="text-2xl font-semibold mb-4">Learning Resources</h3>
+      <p class="text-gray-400">
+        Curated tech courses to accelerate your growth.
+      </p>
     </div>
+
+    <div class="glass-card reveal delay-400">
+      <div class="text-5xl mb-6">🚀</div>
+      <h3 class="text-2xl font-semibold mb-4">Career Insights</h3>
+      <p class="text-gray-400">
+        Stay updated with trending skills & careers.
+      </p>
+    </div>
+
   </div>
 </section>
 
-<!-- Call-to-Action -->
-<section class="relative py-24 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-center overflow-hidden">
-  <div class="container mx-auto px-6 md:px-0 relative z-10">
-    <h2 class="text-4xl md:text-5xl font-bold mb-6 animate-fadeIn">Start Your AI Career Journey Today</h2>
-    <p class="mb-10 text-lg md:text-xl opacity-90 animate-fadeIn delay-200">Explore resources, courses, and personalized career guidance designed to help you succeed.</p>
-    <a href="{% url 'dashboard' %}" class="inline-block bg-transparent border-2 border-white text-white font-semibold py-4 px-10 rounded-xl hover:bg-white hover:text-cyan-600 transition duration-500 transform hover:-translate-y-1 hover:scale-105 shadow-lg">Go to Dashboard</a>
+<!-- ================= CTA ================= -->
+<section class="relative py-28 text-center overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 opacity-90"></div>
+
+  <div class="relative z-10 text-white max-w-4xl mx-auto px-6">
+
+    <h2 class="reveal text-4xl md:text-5xl font-bold mb-6">
+      Start Your Journey with CareerVidya AI
+    </h2>
+
+    <a href="{% url 'dashboard' %}"
+       class="mt-6 inline-block px-10 py-4 bg-black/30 backdrop-blur-xl rounded-xl transition-all duration-300 hover:bg-black/50 hover:scale-110 hover:shadow-[0_0_25px_rgba(255,255,255,0.4)]">
+       Go to Dashboard
+    </a>
+
   </div>
 </section>
 
-<!-- Tailwind Animations -->
+<!-- ================= STYLES ================= -->
 <style>
-@keyframes fadeIn {0% { opacity: 0; transform: translateY(20px);} 100% { opacity: 1; transform: translateY(0);}}
-.animate-fadeIn { animation: fadeIn 1s ease forwards; }
-.animate-fadeIn.delay-200 { animation-delay: 0.2s; }
 
-@keyframes slideInLeft {0% { opacity: 0; transform: translateX(-50px);} 100% { opacity: 1; transform: translateX(0);}}
-.animate-slideInLeft { animation: slideInLeft 1s ease forwards; }
+/* Gradient Animated Text */
+.animated-gradient-text {
+  background: linear-gradient(-45deg,#22d3ee,#3b82f6,#6366f1,#22d3ee);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 6s ease infinite;
+}
+@keyframes gradientMove {
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
 
-@keyframes slideInRight {0% { opacity: 0; transform: translateX(50px);} 100% { opacity: 1; transform: translateX(0);}}
-.animate-slideInRight { animation: slideInRight 1s ease forwards; }
+/* Glass Cards */
+.glass-card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 40px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.5s ease;
+}
+.glass-card:hover {
+  transform: translateY(-15px) scale(1.05);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+}
+
+/* Scroll Reveal */
+.reveal,
+.reveal-left,
+.reveal-right {
+  opacity: 0;
+  transition: all 1s ease;
+}
+.reveal { transform: translateY(60px); }
+.reveal-left { transform: translateX(-80px); }
+.reveal-right { transform: translateX(80px); }
+
+.reveal.active,
+.reveal-left.active,
+.reveal-right.active {
+  opacity: 1;
+  transform: translate(0);
+}
+
+/* Delays */
+.delay-200 { transition-delay: .2s; }
+.delay-400 { transition-delay: .4s; }
+
+/* Floating Blobs */
+.blob {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: .4;
+  animation: float 12s infinite alternate ease-in-out;
+}
+.blob1 { background:#22d3ee; top:-150px; left:-150px; }
+.blob2 { background:#6366f1; bottom:-150px; right:-150px; }
+
+@keyframes float {
+  from { transform: translateY(0px); }
+  to { transform: translateY(40px); }
+}
+
 </style>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add("active");
+    }
+  });
+},{threshold:0.2});
+
+document.querySelectorAll(".reveal, .reveal-left, .reveal-right")
+.forEach(el=>observer.observe(el));
+</script>
 
 {% endblock %}

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AI Career Guidance</title>
+  <title>CareerVidya AI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
@@ -78,59 +78,82 @@ pointer-events:auto;
   100%{background-position:0% 50%;}
 }
 
-/* ================= CHATBOX ================= */
+/* ================= CHATBOT CONTAINER ================= */
+
 #ai-chatbot-box{
   position: fixed;
-  top:0;
-  right:0;
-  height: 100dvh;
-  width: 420px;
-  max-width: 100%;
-  background: rgba(15,15,35,.90);
-  backdrop-filter: blur(30px);
-  border-left: 1px solid rgba(255,255,255,.1);
-  box-shadow: -30px 0 80px rgba(0,0,0,.7);
-  transform: translateX(100%);
-  transition: transform .5s cubic-bezier(.77,0,.18,1);
+  right: 25px;
+  bottom: 110px;
+  width: 380px;
+  max-width: 92vw;
+  height: 520px;
+  background: rgba(15,15,35,.95);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 24px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.6);
   display: flex;
   flex-direction: column;
-  z-index: 1001;
+  overflow: hidden;
+  z-index: 9999;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform .4s ease, opacity .3s ease;
 }
 
 #ai-chatbot-box.active{
   transform: translateX(0);
+  opacity: 1;
 }
 
-/* Chat window flex */
+/* ================= WINDOW FLEX STRUCTURE ================= */
+
 .ai-chat-window{
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 0; /* critical for mobile scroll */
+  min-height: 0; /* critical for scroll */
 }
 
-/* Header */
+/* ================= HEADER ================= */
+
 .ai-chat-header{
+  flex: 0 0 65px;
   background: linear-gradient(135deg,#4f46e5,#7c3aed);
-  padding: 20px;
+  padding: 18px 22px;
   color: white;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  letter-spacing: .5px;
 }
 
-/* Chat messages */
+.ai-chat-header button{
+  background: rgba(255,255,255,.15);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.ai-chat-header button:hover{
+  background: rgba(255,255,255,.3);
+  transform: rotate(90deg);
+}
+
+/* ================= MESSAGES ================= */
+
 #chat-messages{
   flex: 1;
   overflow-y: auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  min-height: 0; /* critical for mobile scroll */
-  -webkit-overflow-scrolling: touch;
+  gap: 12px;
 }
 
 /* Scrollbar */
@@ -142,7 +165,8 @@ pointer-events:auto;
   border-radius:10px;
 }
 
-/* Chat bubbles */
+/* ================= CHAT BUBBLES ================= */
+
 .chat-message{
   padding:14px 18px;
   border-radius:22px;
@@ -150,13 +174,27 @@ pointer-events:auto;
   font-size:14.5px;
   line-height:1.6;
   word-wrap: break-word;
+  animation: fadeInUp .3s ease;
 }
+
+@keyframes fadeInUp{
+  from{
+    opacity:0;
+    transform: translateY(10px);
+  }
+  to{
+    opacity:1;
+    transform: translateY(0);
+  }
+}
+
 .chat-user{
   align-self: flex-end;
   background: linear-gradient(135deg,#6366f1,#8b5cf6);
   color:white;
   border-bottom-right-radius:6px;
 }
+
 .chat-bot{
   align-self: flex-start;
   background: rgba(255,255,255,.08);
@@ -165,53 +203,87 @@ pointer-events:auto;
   border-bottom-left-radius:6px;
 }
 
-/* Input */
+/* ================= INPUT AREA ================= */
+
 .ai-chat-input{
+  flex: 0 0 70px;
   display:flex;
-  background: rgba(255,255,255,.05);
-  border-top: 1px solid rgba(255,255,255,.1);
-  padding-bottom: env(safe-area-inset-bottom);
-  flex-shrink: 0;
+  align-items:center;
+  background: rgba(255,255,255,.06);
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding: 12px;
+  gap: 10px;
 }
 
 .ai-chat-input input{
   flex:1;
-  padding:16px;
+  padding:12px 16px;
   border:none;
-  background:transparent;
+  background: rgba(255,255,255,.08);
   color:white;
+  border-radius: 18px;
   outline:none;
+  font-size:14px;
+}
+
+.ai-chat-input input::placeholder{
+  color: rgba(255,255,255,.5);
 }
 
 .ai-chat-input button{
-  padding:16px 22px;
+  padding:12px 18px;
+  border-radius: 18px;
   background: linear-gradient(135deg,#6366f1,#8b5cf6);
   border:none;
   color:white;
   cursor:pointer;
+  transition:.3s;
+}
+#voiceToggle{
+  padding: 12px !important;
+  width: 45px;
+  flex-shrink: 0;
+}
+.ai-chat-input{
+  display: flex;
+  align-items: center;
 }
 
-/* ================= MOBILE FIXES ================= */
+.ai-chat-input input{
+  flex: 1;
+  min-width: 0;
+}
+.ai-chat-input button:hover{
+  transform: scale(1.05);
+  box-shadow:0 10px 25px rgba(99,102,241,.5);
+}
+
+/* ================= MOBILE FIX ================= */
+
 @media (max-width:768px){
+
   #ai-chatbot-box{
-    width:100vw;
+    right: 10px;
+    bottom: 95px;
+    width: 95%;
+    height: 70vh;
   }
-  #ai-chatbot-icon{
-    width:60px;
-    height:60px;
-    font-size:28px;
-    bottom:15px;
-    right:15px;
+
+  .ai-chat-input{
+    flex: 0 0 65px;
   }
+
   .ai-chat-input input{
     padding:12px;
     font-size:14px;
   }
+
   .ai-chat-input button{
     padding:12px 16px;
     font-size:14px;
   }
 }
+
 @media (max-width:480px){
   .chat-message{
     max-width:85%;
@@ -228,8 +300,8 @@ pointer-events:auto;
 <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
 
 <h1 class="text-xl md:text-2xl font-extrabold tracking-wide text-white flex items-center gap-2">
-🤖 <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-300">
-AI Career Guidance
+🧭<span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-300">
+<a href="/" class="hover:text-yellow-300">CareerVidya AI</a>
 </span>
 </h1>
 
@@ -328,7 +400,7 @@ mobileMenu.classList.remove('show');
 
 {% if user.is_authenticated %}
 
-<div id="ai-chatbot-icon" onclick="toggleChatbot()">🤖</div>
+<div id="ai-chatbot-icon" onclick="toggleChatbot()">💬</div>
 
 <div id="ai-chatbot-box">
 <div class="ai-chat-window">
@@ -341,44 +413,41 @@ mobileMenu.classList.remove('show');
 <div id="chat-messages"></div>
 
 <div class="ai-chat-input">
-<input type="text" id="user-input" placeholder="Ask about your career..." onkeypress="handleKey(event)">
-<button onclick="sendMessage()">Send</button>
-</div>
+<button onclick="startListening()" title="Speak">🎤</button>
 
+<input type="text" id="user-input"
+placeholder="Ask about your career..."
+onkeypress="handleKey(event)">
+
+<button onclick="sendMessage()">Send</button>
+
+<button onclick="toggleVoice()" id="voiceToggle" title="Toggle Voice">🔊</button>
+</div>
 </div>
 </div>
 
 <script>
+
+let voiceEnabled = true;
+
+/* ================= TOGGLE CHAT ================= */
+
 function toggleChatbot(){
   const chatBox = document.getElementById('ai-chatbot-box');
-
   chatBox.classList.toggle('active');
 
-  if(chatBox.classList.contains('active')){
-      // ✅ mobile scroll lock properly
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${window.scrollY}px`;
-      document.body.style.width = "100%";
-  }else{
-    // ✅ restore scroll + navbar position safely
-    const scrollY = document.body.style.top;
-
-    document.body.style.overflow = "";
-    document.body.style.position = "";
-    document.body.style.top = "";
-    document.body.style.width = "";
-
-    if(scrollY){
-        window.scrollTo(0, Math.abs(parseInt(scrollY)));
-    }
+  document.body.style.overflow =
+    chatBox.classList.contains('active') ? "hidden" : "";
 }
-}
+
+/* ================= SCROLL ================= */
 
 function scrollToBottom(){
   const chat=document.getElementById('chat-messages');
   chat.scrollTop = chat.scrollHeight + 100;
 }
+
+/* ================= ADD MESSAGE ================= */
 
 function addMessage(msg, sender='bot'){
   const chat=document.getElementById('chat-messages');
@@ -389,21 +458,26 @@ function addMessage(msg, sender='bot'){
 
   chat.appendChild(div);
 
-  setTimeout(scrollToBottom,0);
-  setTimeout(scrollToBottom,100);
+  setTimeout(scrollToBottom,50);
 }
+
+/* ================= AUTO GREETING ================= */
 
 window.addEventListener('load',()=>{
   setTimeout(()=>{
-    addMessage("Hey 👋 I'm Jarvis, your AI Career Mentor.\nAsk me anything about your future 🚀");
-  },300);
+    addMessage("Hey 👋 I'm your CareerVidya AI Mentor 🚀\nAsk me anything about your future!");
+  },400);
 });
+
+/* ================= ENTER KEY ================= */
 
 function handleKey(event){
   if(event.key==="Enter"){
     sendMessage();
   }
 }
+
+/* ================= SEND MESSAGE ================= */
 
 function sendMessage(){
   const input=document.getElementById('user-input');
@@ -431,6 +505,15 @@ function sendMessage(){
   .then(data=>{
     typingDiv.remove();
     addMessage(data.reply,'bot');
+
+    // 🔊 Speak AI Reply
+    // 🔊 Play ElevenLabs Audio
+  setTimeout(()=>{
+    if(data.audio && voiceEnabled){
+        const audio = new Audio("data:audio/mpeg;base64," + data.audio);
+        audio.play();
+    }
+}, 500);
   })
   .catch(()=>{
     typingDiv.remove();
@@ -438,8 +521,35 @@ function sendMessage(){
   });
 }
 
-</script>
+/* ================= VOICE TOGGLE ================= */
 
+function toggleVoice(){
+  voiceEnabled = !voiceEnabled;
+  const btn = document.getElementById("voiceToggle");
+  btn.textContent = voiceEnabled ? "🔊" : "🔇";
+}
+
+/* ================= SPEECH TO TEXT ================= */
+
+function startListening(){
+
+  if(!('webkitSpeechRecognition' in window)){
+    alert("Speech recognition not supported in this browser");
+    return;
+  }
+
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.start();
+
+  recognition.onresult = function(event){
+    document.getElementById("user-input").value =
+      event.results[0][0].transcript;
+  };
+
+}
+
+</script>
 {% endif %}
 
 <!-- ================= FOOTER ================= -->
