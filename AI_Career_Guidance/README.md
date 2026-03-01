@@ -13,9 +13,11 @@ It helps students discover suitable career paths through quiz assessments, resum
 ### 👨‍🎓 Student Module
 - Secure Registration & Login 
 - Student Dashboard
+- Account Information
+- Select Interest & Multiple Skills
 - Career-Based Quiz System
 - Instant Score Calculation
-- Career Suggestions Based on Performance
+- Career Suggestions Based on selected Skills & Quiz Performance
 - Resume Upload & Analysis
 - Download Career Details as PDF
 
@@ -158,11 +160,12 @@ http://127.0.0.1:8000/
 
 ## 📊 Core Database Models
 
-- User  
+- Dashboard
+- Users
 - StudentProfile  
-- Best Career  
-- Skill & Interest
-- Category  
+- Careers
+- Skills
+- Categories
 - CareerQuizQuestion  
 - CombinedCareerResult  
 
