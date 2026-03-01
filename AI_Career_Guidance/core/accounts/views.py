@@ -332,10 +332,9 @@ def admin_dashboard(request):
     total_skills = Skill.objects.count()
     total_categories = Category.objects.count()
     total_quiz_questions = CareerQuizQuestion.objects.count()
-    total_quiz_results = CareerQuizResult.objects.count()  # 👈 ADD THIS
+    total_quiz_results = CombinedCareerResult.objects.count()  # ✅ FIXED
 
     recent_students = StudentProfile.objects.select_related('user').order_by('-id')[:10]
-
 
     context = {
         'total_users': total_users,
@@ -343,12 +342,11 @@ def admin_dashboard(request):
         'total_skills': total_skills,
         'total_categories': total_categories,
         "total_quiz_questions": total_quiz_questions,
-        "total_quiz_results": total_quiz_results,  # 👈 ADD
+        "total_quiz_results": total_quiz_results,
         'recent_students': recent_students,
     }
 
     return render(request, 'accounts/admin/dashboard.html', context)
-
 
 @staff_member_required
 def admin_users(request):
