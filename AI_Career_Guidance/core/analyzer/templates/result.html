@@ -1,0 +1,287 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+.main-bg{
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f172a,#0f0f1a 40%,#1a0f2e);
+    padding:40px 20px;
+    color:white;
+    position:relative;
+    overflow:hidden;
+}
+
+/* Glow Background */
+.main-bg::before{
+    content:'';
+    position:absolute;
+    width:600px;
+    height:600px;
+    background:radial-gradient(circle,#38bdf833,transparent 60%);
+    top:-200px;
+    left:-200px;
+    filter:blur(120px);
+}
+
+.main-bg::after{
+    content:'';
+    position:absolute;
+    width:600px;
+    height:600px;
+    background:radial-gradient(circle,#7b2ff733,transparent 60%);
+    bottom:-200px;
+    right:-200px;
+    filter:blur(120px);
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    position:relative;
+    z-index:2;
+}
+
+h1{
+    text-align:center;
+    font-size:34px;
+    font-weight:800;
+    margin-bottom:40px;
+    background:linear-gradient(90deg,#38bdf8,#7b2ff7);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:30px;
+}
+
+@media(min-width:900px){
+    .grid{
+        grid-template-columns:350px 1fr;
+    }
+}
+
+/* CARD */
+.card{
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(25px);
+    border:1px solid rgba(255,255,255,0.08);
+    padding:30px;
+    border-radius:22px;
+    box-shadow:0 25px 50px rgba(0,0,0,0.6);
+    transition:0.4s ease;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+}
+
+h2{
+    margin-bottom:15px;
+    font-size:20px;
+    font-weight:600;
+    color:#38bdf8;
+}
+
+/* ATS CIRCLE */
+.score-wrapper{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:20px 0;
+}
+
+.score-circle{
+    width:170px;
+    height:170px;
+    border-radius:50%;
+    background:conic-gradient(#38bdf8 {{ ats_score }}%, #1e293b 0%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+}
+
+.score-circle::before{
+    content:'';
+    position:absolute;
+    width:130px;
+    height:130px;
+    background:#0f172a;
+    border-radius:50%;
+}
+
+.score-text{
+    position:relative;
+    font-size:38px;
+    font-weight:700;
+}
+
+@media(min-width:900px){
+    .score-circle{
+        width:200px;
+        height:200px;
+    }
+    .score-circle::before{
+        width:150px;
+        height:150px;
+    }
+    .score-text{
+        font-size:42px;
+    }
+}
+
+.section{
+    margin-bottom:25px;
+}
+
+.section p{
+    line-height:1.7;
+    color:#cbd5e1;
+}
+
+ul{
+    padding-left:18px;
+}
+
+li{
+    margin-bottom:8px;
+    line-height:1.6;
+    color:#e2e8f0;
+}
+
+/* Verdict Box */
+.verdict{
+    background:linear-gradient(90deg,#38bdf8,#7b2ff7);
+    padding:18px;
+    border-radius:14px;
+    font-weight:500;
+    line-height:1.6;
+    color:white;
+}
+
+/* Button */
+.btn{
+    display:block;
+    margin:40px auto 0;
+    padding:14px 32px;
+    border-radius:40px;
+    background:linear-gradient(90deg,#38bdf8,#7b2ff7);
+    text-decoration:none;
+    color:white;
+    font-weight:600;
+    width:fit-content;
+    transition:0.4s ease;
+    box-shadow:0 15px 40px rgba(123,47,247,0.6);
+}
+
+.btn:hover{
+    transform:translateY(-4px);
+    box-shadow:0 20px 60px rgba(123,47,247,0.8);
+}
+
+</style>
+
+<div class="main-bg">
+
+<div class="container">
+
+<h1>🚀 AI Resume Analysis Report</h1>
+
+<div class="grid">
+
+<!-- LEFT SIDE -->
+<div class="card">
+    <h2>ATS Score</h2>
+
+    <div class="score-wrapper">
+        <div class="score-circle">
+            <div class="score-text">{{ ats_score }}%</div>
+        </div>
+    </div>
+
+    <p style="text-align:center;color:#cbd5e1;">
+        Resume compatibility with Applicant Tracking Systems.
+    </p>
+</div>
+
+<!-- RIGHT SIDE -->
+<div class="card">
+
+    <div class="section">
+        <h2>📄 Executive Summary</h2>
+        <p>{{ executive_summary }}</p>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Role Match Analysis</h2>
+        <p>{{ role_match_analysis }}</p>
+    </div>
+
+    <div class="section">
+        <h2>✅ Strengths</h2>
+        <ul>
+            {% for item in strengths %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>⚠ Weaknesses</h2>
+        <ul>
+            {% for item in weaknesses %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>📌 Missing Skills</h2>
+        <ul>
+            {% for item in missing_skills %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🛠 Specific Improvements</h2>
+        <ul>
+            {% for item in improvements %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>📊 Overall Verdict</h2>
+        <div class="verdict">
+            {{ verdict }}
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+<a href="{% url 'analyzer:upload_resume' %}" class="btn">Analyze Another Resume</a>
+
+</div>
+</div>
+
+{% endblock %}

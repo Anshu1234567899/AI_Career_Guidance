@@ -15,6 +15,7 @@ from pathlib import Path
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 ELEVEN_API_KEY = os.environ.get("ELEVEN_API_KEY")
+GROQ_API=os.environ.get("GROQ_API")
 
  
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'chatbot',
+    'analyzer',
 ]
 
 MIDDLEWARE = [

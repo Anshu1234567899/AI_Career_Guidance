@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
 
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;overflow-x:hidden;}
@@ -312,6 +313,8 @@ pointer-events:auto;
 
 {% if user.is_authenticated %}
 <a href="{% url 'dashboard' %}" class="float-link hover:text-yellow-300">Dashboard</a>
+<a href="{% url 'analyzer:upload_resume' %}"class="float-link hover:text-yellow-300" >Resume Analyzer</a>
+
 
 {% if user.is_staff %}
 <a href="{% url 'admin_dashboard' %}" class="px-4 py-2 rounded-xl font-semibold bg-gradient-to-r from-yellow-400 to-orange-400 text-black shadow-lg hover:scale-105 transition">
@@ -349,6 +352,7 @@ Logout
 
     {% if user.is_authenticated %}
       <a href="{% url 'dashboard' %}" class="block hover:text-yellow-300 transition">Dashboard</a>
+      <a href="{% url 'analyzer:upload_resume' %}" class="block hover:text-yellow-300 transition">Resume Analyzer</a>
 
       {% if user.is_staff %}
         <a href="{% url 'admin_dashboard' %}"

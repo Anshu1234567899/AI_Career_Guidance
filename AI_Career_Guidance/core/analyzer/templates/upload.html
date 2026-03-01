@@ -1,0 +1,214 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== SCOPE EVERYTHING ===== */
+.resume-page {
+    --bg:#0f172a;
+    --card:#1e293b;
+    --border:#334155;
+    --text:#f1f5f9;
+    --muted:#94a3b8;
+    --accent1:#38bdf8;
+    --accent2:#8b5cf6;
+
+    min-height:100vh;
+    background:var(--bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:60px 20px;
+    font-family:'Inter',sans-serif;
+}
+
+/* Layout */
+.resume-page .wrapper{
+    max-width:1100px;
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr 420px;
+    gap:80px;
+    align-items:center;
+}
+
+/* Hero */
+.resume-page .hero h1{
+    font-size:46px;
+    font-weight:800;
+    color:var(--text);
+    margin-bottom:20px;
+}
+
+.resume-page .hero span{
+    background:linear-gradient(90deg,var(--accent1),var(--accent2));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.resume-page .hero p{
+    color:var(--muted);
+    font-size:18px;
+    line-height:1.7;
+}
+
+/* Card */
+.resume-page .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:40px;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+
+.resume-page .card h2{
+    text-align:center;
+    color:var(--text);
+    margin-bottom:25px;
+}
+
+/* Upload */
+.resume-page .upload-area{
+    border:2px dashed var(--border);
+    border-radius:14px;
+    padding:28px;
+    text-align:center;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.resume-page .upload-area:hover{
+    border-color:var(--accent1);
+}
+
+.resume-page .upload-area input{
+    display:none;
+}
+
+.resume-page .upload-area p{
+    font-size:14px;
+    color:var(--muted);
+}
+
+.resume-page .file-name{
+    margin-top:10px;
+    font-size:13px;
+    color:var(--accent1);
+    word-break:break-all;
+}
+
+/* Input */
+.resume-page input[type="text"]{
+    width:100%;
+    padding:14px 16px;
+    margin-top:20px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:#0f172a;
+    color:var(--text);
+}
+
+.resume-page input[type="text"]:focus{
+    outline:none;
+    border-color:var(--accent1);
+    box-shadow:0 0 0 3px rgba(56,189,248,.2);
+}
+
+/* Button */
+.resume-page button{
+    width:100%;
+    margin-top:25px;
+    padding:14px;
+    border:none;
+    border-radius:50px;
+    font-weight:600;
+    background:linear-gradient(90deg,var(--accent1),var(--accent2));
+    color:white;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.resume-page button:hover{
+    transform:translateY(-2px);
+}
+
+/* Responsive */
+@media(max-width:1024px){
+    .resume-page .wrapper{
+        grid-template-columns:1fr;
+        gap:50px;
+        text-align:center;
+    }
+}
+
+</style>
+
+<div class="resume-page">
+
+<div class="wrapper">
+
+    <div class="hero">
+        <h1>
+            Analyze Your Resume with 
+            <span>AI Intelligence</span>
+        </h1>
+        <p>
+            Instantly measure ATS compatibility, detect missing skills,
+            and optimize your resume for high-impact tech roles.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Upload Resume 🚀</h2>
+
+        <form method="POST" enctype="multipart/form-data" action="{% url 'analyzer:upload_resume' %}">
+            {% csrf_token %}
+
+            <label class="upload-area" id="uploadBox">
+                <input type="file" name="resume" id="fileInput" required>
+                <strong>Click to Upload or Drag & Drop</strong>
+                <p>PDF, DOC, DOCX supported</p>
+                <div class="file-name" id="fileName"></div>
+            </label>
+
+            <input type="text" name="role" placeholder="Enter Target Job Role" required>
+
+            <button type="submit">Analyze Now</button>
+        </form>
+    </div>
+
+</div>
+</div>
+
+<script>
+const fileInput = document.getElementById("fileInput");
+const fileName = document.getElementById("fileName");
+const uploadBox = document.getElementById("uploadBox");
+
+fileInput.addEventListener("change", function(){
+    if(this.files.length > 0){
+        fileName.textContent = "Selected: " + this.files[0].name;
+    }
+});
+
+uploadBox.addEventListener("dragover", (e)=>{
+    e.preventDefault();
+    uploadBox.style.borderColor = "#38bdf8";
+});
+
+uploadBox.addEventListener("dragleave", ()=>{
+    uploadBox.style.borderColor = "#334155";
+});
+
+uploadBox.addEventListener("drop", (e)=>{
+    e.preventDefault();
+    fileInput.files = e.dataTransfer.files;
+    if(fileInput.files.length > 0){
+        fileName.textContent = "Selected: " + fileInput.files[0].name;
+    }
+});
+</script>
+
+{% endblock %}
