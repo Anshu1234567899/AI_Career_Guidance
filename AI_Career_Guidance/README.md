@@ -1,7 +1,7 @@
 # 🎓 CareerVidya AI
 
 CareerVidya AI is an intelligent web-based career guidance platform built using Django.  
-It helps students discover suitable career paths through quiz assessments, resume analysis, and AI chatbot assistance.
+It helps students discover suitable career paths through Selected Skills ,quiz assessments, resume analysis, and AI chatbot assistance.
 
 🌐 **Live Deployment:** Hosted on Render  
 🔗 **Version Controlled:** Git & GitHub  
