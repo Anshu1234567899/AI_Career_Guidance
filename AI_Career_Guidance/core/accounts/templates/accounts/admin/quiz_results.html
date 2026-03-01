@@ -1,56 +1,84 @@
 {% extends 'accounts/admin/base_admin.html' %}
 
 {% block content %}
-<h1 class="text-2xl font-bold text-cyan-400 mb-6">📊 Quiz Results</h1>
+<h1 class="text-2xl sm:text-3xl font-bold text-cyan-400 mb-6">
+    📊 Quiz Results
+</h1>
 
-<div class="bg-gray-800 p-6 rounded-xl shadow">
-    <table class="w-full text-white">
+<div class="bg-gray-800 p-4 sm:p-6 rounded-xl shadow overflow-x-auto">
+    <table class="min-w-full text-white text-sm sm:text-base">
         <thead>
             <tr class="border-b border-gray-600">
-                <th class="text-left py-2">User</th>
-                <th class="text-left py-2">Career</th>
-                <th class="text-left py-2">Score</th>
-                <th class="text-left py-2">Date</th>
-                <th class="text-left py-2">Action</th>
+                <th class="text-left py-3 px-2">User</th>
+                <th class="text-left py-3 px-2">Career & Action</th>
+                <th class="text-left py-3 px-2">Score</th>
+                <th class="text-left py-3 px-2">Date</th>
             </tr>
         </thead>
         <tbody>
             {% for result in results %}
             <tr class="border-b border-gray-700">
-                <td class="py-2">{{ result.student.user.username }}</td>
-                <td class="py-2">
-                    <form method="post" class="inline-block">
-                        {% csrf_token %}
-                        <input type="hidden" name="result_id" value="{{ result.id }}">
-                        <select name="career" class="text-black px-2 py-1 rounded">
-                            <option value="">Not Assigned</option>
-                            {% for career in careers %}
-                                <option value="{{ career.id }}" {% if result.suggested_career == career %}selected{% endif %}>
-                                    {{ career.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="bg-cyan-400 px-3 py-1 rounded text-black font-semibold">
-                            Save
-                        </button>
-                    </form>
-
-                    <!-- Delete button -->
-                  <form method="post" action="{% url 'admin_quiz_result_delete' result.id %}" class="inline-block ml-2">
-    {% csrf_token %}
-    <button type="submit" class="bg-red-500 px-3 py-1 rounded text-white font-semibold"
-            onclick="return confirm('Are you sure you want to delete this result?');">
-        Delete
-    </button>
-</form>
-
+                
+                <!-- User -->
+                <td class="py-3 px-2 break-words">
+                    {{ result.student.user.username }}
                 </td>
-                <td class="py-2">{{ result.total_score }}</td>
-                <td class="py-2">{{ result.created_at|date:"M d, Y H:i" }}</td>
+
+                <!-- Career + Actions -->
+                <td class="py-3 px-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                        
+                        <!-- Assign Career -->
+                        <form method="post" class="flex flex-col sm:flex-row gap-2 w-full">
+                            {% csrf_token %}
+                            <input type="hidden" name="result_id" value="{{ result.id }}">
+
+                            <select name="career"
+                                    class="text-black px-2 py-1 rounded w-full sm:w-auto">
+                                <option value="">Not Assigned</option>
+                                {% for career in careers %}
+                                    <option value="{{ career.id }}"
+                                        {% if result.suggested_career == career %}selected{% endif %}>
+                                        {{ career.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                            <button type="submit"
+                                    class="bg-cyan-400 px-3 py-1 rounded text-black font-semibold w-full sm:w-auto">
+                                Save
+                            </button>
+                        </form>
+
+                        <!-- Delete -->
+                        <form method="post"
+                              action="{% url 'admin_quiz_result_delete' result.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="bg-red-500 px-3 py-1 rounded text-white font-semibold w-full sm:w-auto"
+                                    onclick="return confirm('Are you sure you want to delete this result?');">
+                                Delete
+                            </button>
+                        </form>
+
+                    </div>
+                </td>
+
+                <!-- Score -->
+                <td class="py-3 px-2">
+                    {{ result.total_score }}
+                </td>
+
+                <!-- Date -->
+                <td class="py-3 px-2 whitespace-nowrap">
+                    {{ result.created_at|date:"M d, Y H:i" }}
+                </td>
+
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" class="py-4 text-center text-gray-400">
+                <td colspan="4"
+                    class="py-6 text-center text-gray-400">
                     No quiz results found.
                 </td>
             </tr>
