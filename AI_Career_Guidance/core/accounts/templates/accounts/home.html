@@ -4,16 +4,14 @@
 
 <!-- ================= TOP SCROLL PROGRESS ================= -->
 <div id="progressBar"
-     class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-[9999] transition-all duration-200">
+     class="fixed top-[80px] left-0 h-[3px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-[20000] transition-all duration-200">
 </div>
 
 <!-- ================= HERO SECTION ================= -->
 <section class="relative min-h-screen flex items-center bg-[#070b1a] text-white overflow-hidden">
 
-  <!-- Background -->
   <div class="absolute inset-0 bg-gradient-to-br from-[#0b1023] via-[#0f1a3a] to-black"></div>
 
-  <!-- Blur Effects -->
   <div class="absolute w-[500px] h-[500px] bg-purple-600/20 blur-[140px] rounded-full top-[-150px] left-[-150px] animate-pulse"></div>
   <div class="absolute w-[400px] h-[400px] bg-indigo-600/20 blur-[120px] rounded-full bottom-[-120px] right-[-120px] animate-pulse"></div>
 
@@ -41,6 +39,11 @@
            class="px-8 py-4 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-[0_0_35px_rgba(139,92,246,0.7)] transition-all duration-300">
            Take Free AI Career Test
         </a>
+        {% elif request.user.is_authenticated and quiz_done %}
+        <a href="{% url 'dashboard' %}"
+           class="px-8 py-4 rounded-xl font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-[0_0_35px_rgba(16,185,129,0.7)] transition-all duration-300">
+           Go To Dashboard
+        </a>
         {% endif %}
 
         <a href="{% url 'skill_based' %}"
@@ -51,11 +54,10 @@
       </div>
     </div>
 
-    <!-- RIGHT IMAGE + 3D -->
+    <!-- RIGHT -->
     <div class="relative h-[500px] flex items-center justify-center fade-in-up">
 
-      <canvas id="brainCanvas"
-              class="absolute inset-0 w-full h-full"></canvas>
+      <canvas id="brainCanvas" class="absolute inset-0 w-full h-full"></canvas>
 
       <div class="relative z-10 group">
         <img src="{% static 'images/students.png' %}"
@@ -67,6 +69,7 @@
 
   </div>
 </section>
+
 
 <!-- ================= PROBLEM SECTION ================= -->
 <section class="py-28 bg-[#0b1023] text-white text-center">
@@ -135,7 +138,7 @@
 </section>
 
 <!-- ================= SOCIAL PROOF ================= -->
-<section class="py-28 bg-[#070b1a] text-white text-center">
+<section class="py-28 bg-[#070b1a] text-white text-center" id="statsSection">
   <div class="max-w-5xl mx-auto grid md:grid-cols-3 gap-12">
 
     <div>
@@ -172,19 +175,7 @@
   </div>
 </section>
 
-<!-- ================= STYLES ================= -->
 <style>
-.glass-card {
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 20px;
-  transition: all 0.4s ease;
-}
-.glass-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-}
 .fade-in-up {
   opacity: 0;
   transform: translateY(50px);
@@ -196,7 +187,6 @@
 }
 </style>
 
-<!-- ================= SCRIPTS ================= -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 
@@ -216,27 +206,38 @@ window.addEventListener("scroll",()=>{
   document.getElementById("progressBar").style.width = (winScroll/height)*100 + "%";
 });
 
-// Counter animation
-document.querySelectorAll(".counter").forEach(counter=>{
-  const update=()=>{
-    const target=+counter.getAttribute("data-target");
-    const c=+counter.innerText;
-    const inc=target/100;
-    if(c<target){
-      counter.innerText=Math.ceil(c+inc);
-      setTimeout(update,20);
-    } else { counter.innerText=target; }
-  };
-  update();
-});
+// Counter (viewport trigger)
+let counterStarted = false;
+const statsSection = document.getElementById("statsSection");
 
-// Three.js sphere
+const counterObserver = new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting && !counterStarted){
+    counterStarted = true;
+    document.querySelectorAll(".counter").forEach(counter=>{
+      const update=()=>{
+        const target=+counter.getAttribute("data-target");
+        const c=+counter.innerText;
+        const inc=target/100;
+        if(c<target){
+          counter.innerText=Math.ceil(c+inc);
+          setTimeout(update,20);
+        } else { counter.innerText=target; }
+      };
+      update();
+    });
+  }
+},{threshold:0.5});
+
+counterObserver.observe(statsSection);
+
+// Three.js optimized
 const canvas = document.getElementById("brainCanvas");
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, canvas.offsetWidth/canvas.offsetHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true});
-renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0x000000, 0);
 
 const geometry = new THREE.IcosahedronGeometry(2.5,2);
 const material = new THREE.MeshStandardMaterial({
@@ -263,8 +264,8 @@ function animate(){
 animate();
 
 window.addEventListener("resize",()=>{
-  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-  camera.aspect = canvas.clientWidth / canvas.clientHeight;
+  renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+  camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
   camera.updateProjectionMatrix();
 });
 

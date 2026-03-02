@@ -297,8 +297,8 @@ pointer-events:auto;
 <body class="bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 min-h-screen flex flex-col">
 
 <!-- NAVBAR SAME -->
-<nav class="glass-nav shadow-2xl fixed top-0 left-0 w-full z-[10000]">
-  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+<nav class="glass-nav shadow-2xl sticky top-0 w-full z-[10000]">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
 
 <h1 class="text-xl md:text-2xl font-extrabold tracking-wide text-white flex items-center gap-2">
 🧭<span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-300">
@@ -384,7 +384,7 @@ Logout
 </div>
 </nav>
 
-<main class="flex-1 pt-20">{% block content %}{% endblock %}</main>
+<main class="flex-1">{% block content %}{% endblock %}</main>
 
 <script>
 const menuBtn=document.getElementById('mobile-menu-btn');
@@ -554,7 +554,7 @@ function startListening(){
 {% endif %}
 
 <!-- ================= FOOTER ================= -->
-<footer class="bg-gray-900 text-gray-300 pt-12 pb-6 mt-10">
+<footer class="bg-gray-900 text-gray-300 pt-12 pb-6">
   <div class="max-w-7xl mx-auto px-6">
 
     <div class="grid md:grid-cols-3 gap-10 text-center md:text-left">
